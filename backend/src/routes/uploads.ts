@@ -29,7 +29,7 @@ const upload = multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 102
 
 // Upload up to 3 images and attach to a car
 router.post('/cars/:id/images', requireAuth, requireUser, upload.array('images', 3), async (req: AuthenticatedRequest, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id }, include: { images: true } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string }, include: { images: true } });
   if (!car || car.ownerId !== req.user!.id) return res.status(404).json({ error: 'Not found' });
   if ((car.images?.length || 0) + (req.files as Express.Multer.File[]).length > 3) {
     return res.status(400).json({ error: 'Max 3 images' });

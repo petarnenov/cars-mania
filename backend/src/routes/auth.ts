@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return res.status(409).json({ error: 'Email already registered' });
   const passwordHash = await argon2.hash(password);
-  const user = await prisma.user.create({ data: { email, passwordHash, name } });
+  const user = await prisma.user.create({ data: { email, passwordHash, name: name ?? null } });
   const access = signAccessToken({ sub: user.id, role: user.role });
   const refresh = signRefreshToken({ sub: user.id, role: user.role });
   setAuthCookies(res, access, refresh);

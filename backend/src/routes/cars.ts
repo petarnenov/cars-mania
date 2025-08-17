@@ -38,7 +38,7 @@ router.post('/', requireAuth, requireUser, async (req: AuthenticatedRequest, res
 
 // Update own car (if not verified or only price/description allowed)
 router.put('/:id', requireAuth, requireUser, async (req: AuthenticatedRequest, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string } });
   if (!car || car.ownerId !== req.user!.id) return res.status(404).json({ error: 'Not found' });
 
   const parsed = updateCarSchema.safeParse(req.body);
@@ -66,7 +66,7 @@ router.put('/:id', requireAuth, requireUser, async (req: AuthenticatedRequest, r
 
 // Delete own car
 router.delete('/:id', requireAuth, requireUser, async (req: AuthenticatedRequest, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string } });
   if (!car || car.ownerId !== req.user!.id) return res.status(404).json({ error: 'Not found' });
   await prisma.car.delete({ where: { id: car.id } });
   return res.json({ ok: true });
@@ -74,7 +74,7 @@ router.delete('/:id', requireAuth, requireUser, async (req: AuthenticatedRequest
 
 // Submit for review (draft -> pending)
 router.post('/:id/submit', requireAuth, requireUser, async (req: AuthenticatedRequest, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string } });
   if (!car || car.ownerId !== req.user!.id) return res.status(404).json({ error: 'Not found' });
   if (car.status !== 'DRAFT' && car.status !== 'REJECTED' && car.status !== 'PENDING') {
     return res.status(400).json({ error: 'Invalid status transition' });
@@ -112,7 +112,7 @@ router.get('/', async (req, res) => {
 
 // Get car by id (only verified unless owner/admin)
 router.get('/:id', async (req: AuthenticatedRequest, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id }, include: { images: { orderBy: { sortOrder: 'asc' } } } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string }, include: { images: { orderBy: { sortOrder: 'asc' } } } });
   if (!car) return res.status(404).json({ error: 'Not found' });
   if (car.status !== 'VERIFIED') return res.status(404).json({ error: 'Not found' });
   return res.json(car);
@@ -123,7 +123,7 @@ router.get('/admin/list', requireAuth, requireAdmin, async (req, res) => {
   const { status = 'PENDING', page = '1', pageSize = '20' } = req.query as Record<string, string>;
   const take = Math.min(Math.max(parseInt(pageSize || '20', 10) || 20, 1), 100);
   const skip = (Math.max(parseInt(page || '1', 10) || 1, 1) - 1) * take;
-  const where = status ? { status } : {};
+  const where: any = status ? { status } : {};
   const [items, total] = await Promise.all([
     prisma.car.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take, include: { images: true } }),
     prisma.car.count({ where }),
@@ -132,19 +132,19 @@ router.get('/admin/list', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.post('/admin/:id/verify', requireAuth, requireAdmin, async (req, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string } });
   if (!car) return res.status(404).json({ error: 'Not found' });
   const updated = await prisma.car.update({ where: { id: car.id }, data: { status: 'VERIFIED' } });
-  await prisma.moderationLog.create({ data: { carId: car.id, moderatorId: (req as any).user.id, action: 'verify' } });
+  await prisma.moderationLog.create({ data: { carId: car.id, moderatorId: (req as any).user.id, action: 'verify', reason: null } });
   return res.json(updated);
 });
 
 router.post('/admin/:id/reject', requireAuth, requireAdmin, async (req, res) => {
-  const car = await prisma.car.findUnique({ where: { id: req.params.id } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string } });
   if (!car) return res.status(404).json({ error: 'Not found' });
   const { reason } = (req.body || {}) as { reason?: string };
   const updated = await prisma.car.update({ where: { id: car.id }, data: { status: 'REJECTED' } });
-  await prisma.moderationLog.create({ data: { carId: car.id, moderatorId: (req as any).user.id, action: 'reject', reason } });
+  await prisma.moderationLog.create({ data: { carId: car.id, moderatorId: (req as any).user.id, action: 'reject', reason: reason ?? null } });
   return res.json(updated);
 });
 

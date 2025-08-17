@@ -12,7 +12,7 @@ router.post('/cars/:id/message', requireAuth, async (req: AuthenticatedRequest, 
   const parsed = messageSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'Invalid data' });
   const { body } = parsed.data;
-  const car = await prisma.car.findUnique({ where: { id: req.params.id } });
+  const car = await prisma.car.findUnique({ where: { id: req.params.id as string } });
   if (!car || car.status !== 'VERIFIED') return res.status(404).json({ error: 'Not found' });
   if (car.ownerId === req.user!.id) return res.status(400).json({ error: 'Cannot message your own ad' });
   let convo = await prisma.conversation.findUnique({ where: { carId_buyerId: { carId: car.id, buyerId: req.user!.id } } });
@@ -61,7 +61,7 @@ router.get('/me/conversations', requireAuth, async (req: AuthenticatedRequest, r
 
 // Get messages in a conversation
 router.get('/me/conversations/:id/messages', requireAuth, async (req: AuthenticatedRequest, res) => {
-  const convo = await prisma.conversation.findUnique({ where: { id: req.params.id } });
+  const convo = await prisma.conversation.findUnique({ where: { id: req.params.id as string } });
   if (!convo) return res.status(404).json({ error: 'Not found' });
   if (convo.buyerId !== req.user!.id && convo.sellerId !== req.user!.id) return res.status(403).json({ error: 'Forbidden' });
   const messages = await prisma.message.findMany({ where: { conversationId: convo.id }, orderBy: { createdAt: 'asc' } });
@@ -75,7 +75,7 @@ router.get('/me/conversations/:id/messages', requireAuth, async (req: Authentica
 router.post('/me/conversations/:id/messages', requireAuth, async (req: AuthenticatedRequest, res) => {
   const parsed = messageSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'Invalid data' });
-  const convo = await prisma.conversation.findUnique({ where: { id: req.params.id } });
+  const convo = await prisma.conversation.findUnique({ where: { id: req.params.id as string } });
   if (!convo) return res.status(404).json({ error: 'Not found' });
   if (convo.buyerId !== req.user!.id && convo.sellerId !== req.user!.id) return res.status(403).json({ error: 'Forbidden' });
   const msg = await prisma.message.create({ data: { conversationId: convo.id, senderId: req.user!.id, body: parsed.data.body } });
