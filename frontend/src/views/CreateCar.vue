@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { api } from '../api'
+import { toastError, toastSuccess } from '../toast'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -34,8 +35,10 @@ async function createCar() {
 			}),
 		})
 		createdId.value = data.id
+		toastSuccess('Draft created')
 	} catch (e: any) {
 		error.value = e.message || 'Failed to create car'
+		toastError(error.value)
 	} finally {
 		loading.value = false
 	}
@@ -47,9 +50,11 @@ async function submitForReview() {
 	error.value = ''
 	try {
 		await api(`/cars/${createdId.value}/submit`, { method: 'POST' })
+		toastSuccess('Submitted for review')
 		router.push('/')
 	} catch (e: any) {
 		error.value = e.message || 'Failed to submit for review'
+		toastError(error.value)
 	} finally {
 		loading.value = false
 	}
@@ -67,8 +72,10 @@ async function uploadImages() {
 			credentials: 'include',
 			body: form,
 		})
+		toastSuccess('Images uploaded')
 	} catch (e: any) {
 		error.value = e.message || 'Failed to upload images'
+		toastError(error.value)
 	} finally {
 		loading.value = false
 	}

@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from './api'
 import { authState, fetchMe } from './auth'
+import Toaster from './components/Toaster.vue'
 
 const router = useRouter()
 async function logout() {
@@ -31,6 +32,7 @@ const isAdmin = computed(() => authState.user?.role === 'ADMIN')
 		<button v-if="isAuthed" @click="logout">Logout</button>
 	</nav>
 	<router-view />
+	<Toaster />
 </template>
 
 <style scoped>

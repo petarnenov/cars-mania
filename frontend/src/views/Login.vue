@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { toastError, toastSuccess } from '../toast'
 import { authState } from '../auth'
 
 const router = useRouter()
@@ -27,10 +28,12 @@ async function onSubmit() {
 		const user = await res.json()
 		authState.user = user
 		authState.loaded = true
+		toastSuccess('Logged in')
 		const next = (route.query.next as string) || '/cars/new'
 		router.push(next)
 	} catch (e: any) {
 		error.value = e.message || 'Login failed'
+		toastError(error.value)
 	} finally {
 		loading.value = false
 	}

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { api } from '../api'
+import { toastError, toastSuccess } from '../toast'
 
 type Car = {
 	id: string
@@ -25,6 +26,7 @@ async function load() {
 		items.value = res.items
 	} catch (e: any) {
 		error.value = e.message || 'Failed to load'
+		toastError(error.value)
 	} finally {
 		loading.value = false
 	}
@@ -33,12 +35,14 @@ async function load() {
 async function verify(id: string) {
 	await api(`/cars/admin/${id}/verify`, { method: 'POST' })
 	items.value = items.value.filter(i => i.id !== id)
+	toastSuccess('Verified')
 }
 
 async function reject(id: string) {
 	const reason = prompt('Reason (optional)') || undefined
 	await api(`/cars/admin/${id}/reject`, { method: 'POST', body: JSON.stringify({ reason }) })
 	items.value = items.value.filter(i => i.id !== id)
+	toastSuccess('Rejected')
 }
 
 onMounted(load)

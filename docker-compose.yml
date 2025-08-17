@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  backend:
+    build: ./backend
+    container_name: cars-backend
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/data/dev.db
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-prod_access_secret}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-prod_refresh_secret}
+      - ACCESS_TOKEN_TTL_SECONDS=900
+      - REFRESH_TOKEN_TTL_SECONDS=1209600
+    volumes:
+      - backend_data:/data
+      - uploads:/app/uploads
+    ports:
+      - "3001:3001"
+    command: ["node", "dist/index.js"]
+  frontend:
+    build: ./frontend
+    container_name: cars-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+volumes:
+  backend_data:
+  uploads:

@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { api } from '../api'
 import { useRoute } from 'vue-router'
 import { authState } from '../auth'
+import { toastError, toastSuccess } from '../toast'
 
 const route = useRoute()
 const car = ref<any>(null)
@@ -30,9 +31,9 @@ async function sendMessage() {
 	try {
 		await api(`/cars/${route.params.id}/message`, { method: 'POST', body: JSON.stringify({ body: message.value }) })
 		message.value = ''
-		alert('Message sent')
+		toastSuccess('Message sent')
 	} catch (e: any) {
-		alert(e.message || 'Failed to send message')
+		toastError(e.message || 'Failed to send message')
 	} finally {
 		sending.value = false
 	}
