@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Roles supported by the application
+enum Role {
+  USER
+  ADMIN
+}
+
+/// Listing status lifecycle
+enum CarStatus {
+  DRAFT
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  cars         Car[]
+  messages     Message[] @relation("UserMessages")
+  moderated    ModerationLog[] @relation("ModeratorLogs")
+  buyerConversations  Conversation[] @relation("BuyerConversations")
+  sellerConversations Conversation[] @relation("SellerConversations")
+}
+
+model Car {
+  id                     String     @id @default(cuid())
+  ownerId                String
+  owner                  User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  brand                  String
+  model                  String
+  firstRegistrationDate  DateTime
+  color                  String
+  priceCents             Int
+  description            String
+  status                 CarStatus  @default(DRAFT)
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+
+  images                 CarImage[]
+  conversations          Conversation[]
+  moderationLogs         ModerationLog[]
+
+  @@index([status, createdAt])
+  @@index([ownerId])
+}
+
+model CarImage {
+  id        String @id @default(cuid())
+  carId     String
+  car       Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  url       String
+  sortOrder Int
+
+  @@index([carId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  carId     String
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  buyerId   String
+  buyer     User     @relation("BuyerConversations", fields: [buyerId], references: [id], onDelete: Cascade)
+  sellerId  String
+  seller    User     @relation("SellerConversations", fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  buyerLastReadAt  DateTime?
+  sellerLastReadAt DateTime?
+
+  messages  Message[]
+
+  @@unique([carId, buyerId])
+  @@index([sellerId])
+}
+
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User         @relation("UserMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  body            String
+  createdAt       DateTime     @default(now())
+  readAt          DateTime?
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model ModerationLog {
+  id           String   @id @default(cuid())
+  carId        String
+  car          Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  moderatorId  String
+  moderator    User     @relation("ModeratorLogs", fields: [moderatorId], references: [id], onDelete: Cascade)
+  action       String
+  reason       String?
+  createdAt    DateTime @default(now())
+
+  @@index([carId])
+  @@index([moderatorId])
+}
