@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { toastInfo } from './toast'
 import { authState, fetchMe } from './auth'
 
 export const router = createRouter({
@@ -30,4 +31,9 @@ router.beforeEach(async (to) => {
 		const role = (authState.user?.role ?? '') as string
 		return { path: role === 'ADMIN' ? '/admin/moderation' : '/cars/new' }
 	}
+})
+
+router.afterEach((to) => {
+	const name = to.path
+	toastInfo(`Navigated to ${name}`)
 })
