@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite'
+// @ts-ignore
+import { configDefaults } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
 // https://vite.dev/config/
@@ -12,5 +14,14 @@ export default defineConfig({
 				rewrite: (path) => path.replace(/^\/api/, ''),
 			},
 		},
+	},
+
+	test: {
+		environment: 'jsdom',
+		coverage: {
+			reporter: ['text', 'html'],
+			provider: 'v8',
+		},
+		exclude: [...configDefaults.exclude, 'e2e/**'],
 	},
 })
