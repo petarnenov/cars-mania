@@ -3,15 +3,20 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
 	reporter: [['list'], ['html', { open: 'never' }]],
 	testDir: 'tests-e2e',
+	globalSetup: './tests-e2e/global-setup.ts',
+	globalTeardown: './tests-e2e/global-teardown.ts',
 	use: {
 		baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',
-		headless: true,
-		trace: 'retain-on-failure',
-		video: 'retain-on-failure'
+		headless: process.env.HEADLESS !== 'false',
+		trace: process.env.E2E_VERBOSE === '1' ? 'on' : 'retain-on-failure',
+		video: process.env.E2E_VERBOSE === '1' ? 'on' : 'retain-on-failure',
+		screenshot: process.env.E2E_VERBOSE === '1' ? 'on' : 'only-on-failure',
+		launchOptions: { slowMo: Number(process.env.SLOWMO || '0') },
 	},
 	webServer: {
 		command: 'npm run dev',
 		url: 'http://localhost:5173',
+		env: { BACKEND_URL: 'http://127.0.0.1:3301' },
 		reuseExistingServer: true,
 		timeout: 60_000,
 	},
