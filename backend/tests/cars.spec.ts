@@ -20,7 +20,7 @@ describe('cars routes', () => {
     const draftOk = await request(app)
       .post('/cars')
       .set('Cookie', sellerCookies)
-      .send({ brand: 'VW', model: 'Golf', firstRegistration: '2018-01-01', color: 'black', price: 9000, description: 'nice' })
+      .send({ brand: 'VW', model: 'Golf', firstRegistrationDate: '2018-01-01', color: 'black', priceCents: 900000, description: 'nice' })
     expect(draftOk.status).toBe(201)
 
     const draftAdmin = await request(app)
