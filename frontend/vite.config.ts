@@ -22,10 +22,12 @@ export default defineConfig({
 		coverage: {
 			reporter: ['text', 'html'],
 			provider: 'v8',
-			statements: 85,
-			branches: 80,
-			functions: 85,
-			lines: 85,
+			thresholds: {
+				statements: 85,
+				branches: 80,
+				functions: 85,
+				lines: 85,
+			},
 		},
 		exclude: [...configDefaults.exclude, 'e2e/**', 'tests-e2e/**'],
 	},
