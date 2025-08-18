@@ -1,4 +1,4 @@
-## Cars Mania — Prioritized Build Plan (MVP → Launch)
+# Cars Mania — Prioritized Build Plan (MVP → Launch)
 
 ### Goals
 
