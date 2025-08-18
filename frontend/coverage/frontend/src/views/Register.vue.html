@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/views/Login.vue</title>
+    <title>Code coverage report for frontend/src/views/Register.vue</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,20 +19,20 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/views</a> Login.vue</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">frontend/src/views</a> Register.vue</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>51/51</span>
+                <span class='fraction'>54/54</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>51/51</span>
+                <span class='fraction'>54/54</span>
             </div>
         
             
@@ -129,7 +129,10 @@
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -141,6 +144,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
@@ -152,7 +156,7 @@
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -172,6 +176,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -204,6 +210,7 @@ import { authState } from '../auth'
 const router = useRouter()
 const route = useRoute()
 const email = ref('')
+const name = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
@@ -212,24 +219,24 @@ async function onSubmit() {
 	loading.value = true
 	error.value = ''
 	try {
-		const res = await fetch('/api/auth/login', {
+		const res = await fetch('/api/auth/register', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
-			body: JSON.stringify({ email: email.value, password: password.value }),
+			body: JSON.stringify({ email: email.value, password: password.value, name: name.value }),
 		})
 		if (!res.ok) {
 			const m = await res.json().catch(() =&gt; ({}))
-			throw new Error(m.error || 'Login failed')
+			throw new Error(m.error || 'Register failed')
 		}
 		const user = await res.json()
 		authState.user = user
 		authState.loaded = true
-		toastSuccess('Logged in')
+		toastSuccess('Account created')
 		const next = (route.query.next as string) || '/cars/new'
 		router.push(next)
 	} catch (e: any) {
-		error.value = e.message || 'Login failed'
+		error.value = e.message || 'Register failed'
 		toastError(error.value)
 	} finally {
 		loading.value = false
@@ -239,17 +246,19 @@ async function onSubmit() {
 &nbsp;
 &lt;template&gt;
 	&lt;div class="container"&gt;
-		&lt;h1&gt;Login&lt;/h1&gt;
+		&lt;h1&gt;Register&lt;/h1&gt;
 		&lt;form @submit.prevent="onSubmit"&gt;
+			&lt;label&gt;Name&lt;/label&gt;
+			&lt;input v-model="name" type="text"&gt;
 			&lt;label&gt;Email&lt;/label&gt;
 			&lt;input v-model="email" type="email" required&gt;
 			&lt;label&gt;Password&lt;/label&gt;
 			&lt;input v-model="password" type="password" required&gt;
-			&lt;button :disabled="loading" type="submit"&gt;{{ loading ? '...' : 'Login' }}&lt;/button&gt;
+			&lt;button :disabled="loading" type="submit"&gt;{{ loading ? '...' : 'Create Account' }}&lt;/button&gt;
 			&lt;p v-if="error" class="error"&gt;{{ error }}&lt;/p&gt;
 		&lt;/form&gt;
 		&lt;p&gt;
-			No account? &lt;router-link to="/register"&gt;Register&lt;/router-link&gt;
+			Have an account? &lt;router-link to="/login"&gt;Login&lt;/router-link&gt;
 		&lt;/p&gt;
 	&lt;/div&gt;
 &lt;/template&gt;
@@ -268,16 +277,16 @@ button { margin-top: 1rem; }
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T18:19:02.516Z
+                at 2025-08-18T21:03:41.695Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
     </body>
 </html>
     

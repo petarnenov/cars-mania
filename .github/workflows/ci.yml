@@ -84,23 +84,30 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
-          push: false
-          tags: cars-mania-backend:ci
+          push: true
+          tags: ghcr.io/${{ github.repository }}/backend:latest
 
       - name: Build frontend image
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
-          push: false
-          tags: cars-mania-frontend:ci
+          push: true
+          tags: ghcr.io/${{ github.repository }}/frontend:latest
 
       - name: Docker Compose up (smoke and e2e)
         run: |
-          docker compose up -d --build
+          BACKEND_IMAGE=ghcr.io/${{ github.repository }}/backend:latest FRONTEND_IMAGE=ghcr.io/${{ github.repository }}/frontend:latest docker compose -f docker-compose.ci.yml up -d
           # wait for services
           for i in {1..60}; do
             if curl -fsS http://localhost:3001/health >/dev/null; then echo backend up; break; fi; sleep 1; done

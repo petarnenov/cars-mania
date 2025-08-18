@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/App.vue</title>
+    <title>Code coverage report for frontend/playwright.config.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> App.vue</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">frontend</a> playwright.config.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
@@ -94,19 +94,7 @@
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a>
-<a name='L39'></a><a href='#L39'>39</a>
-<a name='L40'></a><a href='#L40'>40</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -118,14 +106,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -139,47 +125,37 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;script setup lang="ts"&gt;
-<span class="cstat-no" title="statement not covered" >import { computed, onMounted } from 'vue'</span>
-<span class="cstat-no" title="statement not covered" >import { useRouter } from 'vue-router'</span>
-<span class="cstat-no" title="statement not covered" >import { api } from './api'</span>
-<span class="cstat-no" title="statement not covered" >import { authState, fetchMe } from './auth'</span>
-<span class="cstat-no" title="statement not covered" >import Toaster from './components/Toaster.vue'</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/// &lt;reference types="node" /&gt;
+<span class="cstat-no" title="statement not covered" >import { defineConfig, devices } from '@playwright/test'</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >const router = useRouter()</span>
-<span class="cstat-no" title="statement not covered" >async function logout() {</span>
-<span class="cstat-no" title="statement not covered" >	try {</span>
-<span class="cstat-no" title="statement not covered" >		await api('/auth/logout', { method: 'POST' })</span>
-<span class="cstat-no" title="statement not covered" >	} finally {</span>
-<span class="cstat-no" title="statement not covered" >		authState.user = null</span>
-<span class="cstat-no" title="statement not covered" >		router.push('/login')</span>
-<span class="cstat-no" title="statement not covered" >	}</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+<span class="cstat-no" title="statement not covered" >export default defineConfig({</span>
+<span class="cstat-no" title="statement not covered" >	reporter: [['list'], ['html', { open: 'never' }]],</span>
+<span class="cstat-no" title="statement not covered" >	testDir: 'tests-e2e',</span>
+<span class="cstat-no" title="statement not covered" >	globalSetup: process.env.E2E_DOCKER === '1' ? undefined : './tests-e2e/global-setup.ts',</span>
+<span class="cstat-no" title="statement not covered" >	globalTeardown: process.env.E2E_DOCKER === '1' ? undefined : './tests-e2e/global-teardown.ts',</span>
+<span class="cstat-no" title="statement not covered" >	use: {</span>
+<span class="cstat-no" title="statement not covered" >		baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',</span>
+<span class="cstat-no" title="statement not covered" >		headless: process.env.HEADLESS !== 'false',</span>
+<span class="cstat-no" title="statement not covered" >		trace: process.env.E2E_VERBOSE === '1' ? 'on' : 'retain-on-failure',</span>
+<span class="cstat-no" title="statement not covered" >		video: process.env.E2E_VERBOSE === '1' ? 'on' : 'retain-on-failure',</span>
+<span class="cstat-no" title="statement not covered" >		screenshot: process.env.E2E_VERBOSE === '1' ? 'on' : 'only-on-failure',</span>
+<span class="cstat-no" title="statement not covered" >		launchOptions: { slowMo: Number(process.env.SLOWMO || '0') },</span>
+<span class="cstat-no" title="statement not covered" >	},</span>
+<span class="cstat-no" title="statement not covered" >	webServer: process.env.E2E_DOCKER === '1'</span>
+<span class="cstat-no" title="statement not covered" >		? undefined</span>
+<span class="cstat-no" title="statement not covered" >		: {</span>
+<span class="cstat-no" title="statement not covered" >			command: 'npm run dev',</span>
+<span class="cstat-no" title="statement not covered" >			url: 'http://localhost:5173',</span>
+<span class="cstat-no" title="statement not covered" >			env: { BACKEND_URL: 'http://127.0.0.1:3301' },</span>
+<span class="cstat-no" title="statement not covered" >			reuseExistingServer: true,</span>
+<span class="cstat-no" title="statement not covered" >			timeout: 60_000,</span>
+<span class="cstat-no" title="statement not covered" >		},</span>
+<span class="cstat-no" title="statement not covered" >	projects: [</span>
+<span class="cstat-no" title="statement not covered" >		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },</span>
+<span class="cstat-no" title="statement not covered" >	],</span>
+<span class="cstat-no" title="statement not covered" >})</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >onMounted(() =&gt; { if (!authState.loaded) fetchMe() })</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >const isAuthed = computed(() =&gt; !!authState.user)</span>
-<span class="cstat-no" title="statement not covered" >const isAdmin = computed(() =&gt; authState.user?.role === 'ADMIN')</span>
-&lt;/script&gt;
-&nbsp;
-&lt;template&gt;
-<span class="cstat-no" title="statement not covered" >	&lt;nav style="display:flex; gap:1rem; padding:1rem; border-bottom:1px solid #eee;"&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;router-link to="/"&gt;Catalog&lt;/router-link&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;router-link v-if="!isAuthed" to="/login"&gt;Login&lt;/router-link&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;router-link v-if="!isAuthed" to="/register"&gt;Register&lt;/router-link&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;router-link v-if="isAuthed &amp;&amp; !isAdmin" to="/cars/new"&gt;New Car&lt;/router-link&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;router-link v-if="isAuthed" to="/inbox"&gt;Inbox&lt;/router-link&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;router-link v-if="isAdmin" to="/admin/moderation"&gt;Admin Queue&lt;/router-link&gt;</span>
-<span class="cstat-no" title="statement not covered" >		&lt;button v-if="isAuthed" @click="logout"&gt;Logout&lt;/button&gt;</span>
-<span class="cstat-no" title="statement not covered" >	&lt;/nav&gt;</span>
-<span class="cstat-no" title="statement not covered" >	&lt;router-view /&gt;</span>
-<span class="cstat-no" title="statement not covered" >	&lt;Toaster /&gt;</span>
-&lt;/template&gt;
-&nbsp;
-&lt;style scoped&gt;
-&lt;/style&gt;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -187,7 +163,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T18:19:02.516Z
+                at 2025-08-18T21:03:41.695Z
             </div>
         <script src="../prettify.js"></script>
         <script>
