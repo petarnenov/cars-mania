@@ -1,8 +1,8 @@
-// Flat config for backend (Node + TypeScript ESM)
-import tsParser from '@typescript-eslint/parser'
-import tsPlugin from '@typescript-eslint/eslint-plugin'
+// Flat config for backend (Node + TypeScript, CommonJS)
+const tsParser = require('@typescript-eslint/parser')
+const tsPlugin = require('@typescript-eslint/eslint-plugin')
 
-export default [
+module.exports = [
 	{ ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'src/generated/**', '**/*.d.ts'] },
 	{
 		files: ['**/*.ts'],
