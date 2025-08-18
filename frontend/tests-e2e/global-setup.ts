@@ -24,6 +24,8 @@ export default async function globalSetup(_config: FullConfig) {
 
 	// Ensure schema is in place for a fresh db
 	execSync('npx prisma db push', { cwd: backendDir, env, stdio: 'inherit' })
+	// Generate Prisma client for TS runtime
+	execSync('npx prisma generate', { cwd: backendDir, env, stdio: 'inherit' })
 
 	// Start backend in watch mode (fast startup via tsx)
 	const child = spawn('npm', ['run', 'dev'], { cwd: backendDir, env, stdio: 'inherit' })
