@@ -207,3 +207,64 @@ describe('MyView.vue', () => {
 1) Lint/build is clean (`npm run lint`, `npm run build`)
 1) No unused variables or unawaited promises
 1) Deterministic time control (fake timers) where applicable
+
+## Case study: Inbox integration tests (Inbox.vue)
+
+Why integration here
+
+- The `Inbox.vue` view coordinates multiple concerns at once: selecting a conversation, fetching messages, rendering alignment based on the authenticated user, and sending messages with proper disabled states. We test this wiring end-to-end with a real DOM and a mocked API to validate visible behavior, guard paths, and side-effects without peeking into internal refs.
+
+Scenarios covered
+
+- **Happy path (load + render)**: Loads conversations, auto-selects the first item when none is selected, fetches its messages, and renders bubbles with distinct alignment (`.msg.me` for current user, `.msg.them` for the other side). Also verifies unread badge rendering.
+- **Conversations errors**:
+  - Throw `Error` → shows its message
+  - Reject with non-Error (e.g., `{}`) → falls back to default "Failed to load inbox"
+- **Messages errors**:
+  - Throw `Error` → shows its message
+  - Reject with non-Error → falls back to default "Failed to load messages"
+- **Send lifecycle**:
+  - Button disables while request is pending, re-enables after completion
+  - On success, message is appended, input is cleared, list remains scrolled to bottom
+  - Throw `Error` → shows its message
+  - Reject with non-Error → falls back to default "Failed to send"
+- **Guard paths (critical for branch coverage)**:
+  - `loadMessages()` returns early when `selectedId` is null (no network call made)
+  - `send()` returns early when `selectedId` is null (no network call made)
+  - `send()` returns early when `input` is blank/whitespace (no network call made)
+
+Patterns and best practices used
+
+- **Module mock of API**: One `apiMock = vi.fn()` drives all network behavior; the implementation switches on `path` and `init?.method`. This keeps the test boundary at the view while exercising its real logic.
+- **Auth state**: Use the real `authState` but set `loaded = true` and a concrete user id in `beforeEach` so the me/them alignment logic is deterministic.
+- **Deterministic async**: A simple `flush` helper (`await new Promise(r => setTimeout(r))`) is enough because there is no debounce/timeout behavior inside `Inbox.vue`. For debounce-style UIs, use fake timers instead.
+- **DOM-first assertions**: Query `.messages .msg.me/.them`, `.badge`, and `.empty` instead of asserting internal arrays/refs.
+- **Negative assertions for guards**: After invoking guarded code paths, assert that no POST call was issued by inspecting `apiMock.mock.calls`.
+- **Isolation**: Reset all mocks and `authState` inside `beforeEach` to make each spec independent.
+
+Minimal examples (extracted from `src/views/__tests__/Inbox.integration.spec.ts`)
+
+```ts
+// Guard: send() with no selectedId should not call POST
+const initialCalls = apiMock.mock.calls.length
+await (wrapper.vm as any).send()
+await flush()
+const postCalled = apiMock.mock.calls.slice(initialCalls)
+  .some(([p, init]) => String(p).includes('/messages') && (init as any)?.method === 'POST')
+expect(postCalled).toBe(false)
+
+// Guard: send() with blank input should not call POST
+await wrapper.find('textarea').setValue('   ')
+await (wrapper.vm as any).send()
+await flush()
+expect(apiMock.mock.calls.some(([p, init]) => String(p).includes('/messages') && (init as any)?.method === 'POST')).toBe(false)
+
+// Happy path: auto-selects first conversation and renders me/them
+expect(wrapper.findAll('.sidebar ul li').length).toBe(1)
+expect(wrapper.findAll('.messages .msg.them').length).toBe(1)
+expect(wrapper.findAll('.messages .msg.me').length).toBe(1)
+```
+
+Why not only unit tests?
+
+- Unit tests that stub individual methods risk missing the coupling between: selected conversation → message fetch → message alignment → send button state transitions. The integration spec validates those interactions and visible outcomes together, while still keeping the network mocked and the tests fast.
