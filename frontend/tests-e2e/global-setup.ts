@@ -13,6 +13,7 @@ export default async function globalSetup(_config: FullConfig) {
 	const backendDir = path.resolve(__dirname, '../../backend')
 	const env = {
 		...process.env,
+		NODE_ENV: 'test',
 		PORT: '3301',
 		JWT_ACCESS_SECRET: 'test_access_secret',
 		JWT_REFRESH_SECRET: 'test_refresh_secret',
