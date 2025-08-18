@@ -160,6 +160,17 @@ Conversation list, unread badges, load/send messages
 1) UX infrastructure: `Toaster`, `router`
 Auto-dismiss and styles; guards and route-change toasts
 
+## Unit-tested Vue components (files)
+
+- `frontend/src/views/Login.vue` (spec: `frontend/src/views/__tests__/Login.spec.ts`)
+- `frontend/src/views/Register.vue` (spec: `frontend/src/views/__tests__/Register.spec.ts`)
+- `frontend/src/views/CarsList.vue` (spec: `frontend/src/views/__tests__/CarsList.spec.ts`)
+- `frontend/src/views/CreateCar.vue` (spec: `frontend/src/views/__tests__/CreateCar.spec.ts`)
+- `frontend/src/views/CarDetail.vue` (spec: `frontend/src/views/__tests__/CarDetail.spec.ts`)
+- `frontend/src/views/Inbox.vue` (spec: `frontend/src/views/__tests__/Inbox.spec.ts`)
+- `frontend/src/views/AdminQueue.vue` (spec: `frontend/src/views/__tests__/AdminQueue.spec.ts`)
+- `frontend/src/components/Toaster.vue` (spec: `frontend/src/components/__tests__/Toaster.spec.ts`)
+
 ## Writing a new spec (template)
 
 ```ts
