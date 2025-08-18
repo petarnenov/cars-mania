@@ -5,11 +5,12 @@
 - **Roles**: Guest (browse/search), Registered User (post/manage, send/receive messages), Admin (verify/moderate, manage users/ads).
 
 ### Chosen Tech Stack
-- **Frontend**: Vite + Vue 3 (TypeScript), Vue Router, Pinia, Tailwind or UnoCSS.
-- **Backend**: Node.js (Express or Fastify), TypeScript.
-- **Database**: SQLite.
-- **Auth**: JWT (access+refresh) with HTTP-only cookies.
-- **Infra**: Simple single-process deploy initially; Docker optional for local.
+- **Frontend**: Vite + Vue 3 (TypeScript), Vue Router, Vitest + Vue Test Utils + jsdom, ESLint (v9 flat config), simple Toaster.
+- **Backend**: Node.js (Express), TypeScript, Prisma ORM.
+- **Database**: SQLite (Prisma Client generated).
+- **Auth**: JWT (access+refresh) with HTTP-only cookies, Argon2 for password hashing, Zod for validation.
+- **Uploads**: Multer to local disk (max 3 images per car) for MVP.
+- **Infra**: Docker + Docker Compose for local. S3/CDN deferred.
 
 ---
 
@@ -19,9 +20,9 @@
 - Add CI (lint/test build) for both apps.
 
 2) Core scaffolding
-- Frontend: Vite Vue TS, Router, Pinia, Tailwind. Error boundary + toast system.
-- ✅ Backend: NestJS/Express structure (modules/controllers/services). Healthcheck route.
-- ✅ Shared env handling (.env files + schema validation via zod/joi).
+- ✅ Frontend: Vite + Vue 3 (TS), Vue Router, Toaster (alerts replaced with toasts everywhere).
+- ✅ Backend: Express structure (routers/middleware). Healthcheck route.
+- ✅ Shared env handling (.env files + schema validation via Zod).
 
 3) Database & migrations
 - ✅ Set up SQLite + Prisma/Drizzle. Create migration pipeline.
@@ -29,8 +30,8 @@
 4) ✅ User model & roles (table `users` with `role` enum: guest implicit, `user`, `admin`).
 
 5) Definition of Done
-- Dev env up via `docker compose up` for DB + local S3 (MinIO) + apps.
-- CI green on lint/build/tests.
+- ✅ Dev env up via `docker compose up` for DB + apps (SQLite + local uploads volume).
+- CI green on lint/build/tests. (TBD)
 
 ---
 
@@ -95,7 +96,8 @@
 - Optional: background resize to multiple sizes; store original + optimized; serve via CDN; store aspect ratio.
 
 3) DoD
-- Reorder/delete within 3 images. Broken upload recovery. Thumbnails appear in catalog and detail view.
+- ✅ Upload up to 3 images per car via local endpoint; thumbnails appear in catalog and detail view.
+- Reorder/delete within 3 images. Broken upload recovery. (TBD)
 
 ---
 
@@ -111,7 +113,7 @@
 
 3) UI
 - ✅ From car detail: "Message seller" opens thread or creates one.
-- ✅ Inbox for users: list threads, message view with replies.
+- ✅ Inbox for users: list threads, message view with replies, unread badges, read receipts.
 
 4) Notifications (minimal)
 - New message push (websocket or polling) + email digest (optional). Mark-as-read semantics.
@@ -124,14 +126,17 @@
 
 ### Phase 6 — UX Polish & Search
 1) Catalog
-- Faceted filters (brand, model, year, color, price range), sharable URLs, empty-states, skeletons.
+- ✅ Faceted filters (brand, model, year, color, price range), sharable URLs via query params, pagination & sorting, price slider UI polished.
+- Empty-states, skeletons. (TBD)
 - SEO for listing pages and car detail (SSR optional later).
 
 2) Car detail
-- Gallery (keyboard + swipe), spec section, seller badge, contact CTA.
+- ✅ Gallery, spec section, contact CTA, image grid.
+- Keyboard/swipe navigation. (TBD)
 
 3) DoD
-- Lighthouse acceptable (>85 perf/accessibility), responsive, keyboard navigable.
+- Global route-change toasts after navigation.
+- Lighthouse acceptable (>85 perf/accessibility), responsive, keyboard navigable. (TBD)
 
 ---
 
@@ -166,12 +171,19 @@
 
 ---
 
-### Endpoints (reference sketch; adapt to your framework)
-- Auth: `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`.
-- Cars: `POST /cars` (user), `PUT /cars/:id`, `DELETE /cars/:id`, `POST /cars/:id/submit`, `GET /cars` (verified only for guests), `GET /cars/:id`.
-- Admin: `GET /admin/cars?status=pending`, `POST /admin/cars/:id/verify`, `POST /admin/cars/:id/reject`.
-- Uploads: `POST /uploads/presign` (max 3 per car, returns URLs/fields).
+### Endpoints (actual MVP)
+- Auth: `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`.
+- Cars: `POST /cars` (user), `PUT /cars/:id`, `DELETE /cars/:id`, `POST /cars/:id/submit`, `GET /cars` (verified for guests), `GET /cars/:id`.
+- Admin: `GET /cars/admin/list?status=PENDING`, `POST /cars/admin/:id/verify`, `POST /cars/admin/:id/reject`.
+- Uploads: `POST /upload/cars/:id/images` (max 3 files per car; Multer, local disk).
 - Messaging: `POST /cars/:id/message` (create or reuse conversation), `GET /me/conversations`, `GET /me/conversations/:id/messages`, `POST /me/conversations/:id/messages`.
+
+---
+
+### Testing & Quality (added)
+- ✅ ESLint v9 flat config enabled; autofix script added.
+- ✅ Unit tests (Vitest + Vue Test Utils): `Login`, `Register`, `CarsList`, `CreateCar`, `CarDetail`, `Inbox`, `AdminQueue`, `Toaster`, and `router` guards.
+- ✅ Coverage ~86% statements on frontend; key views and router at ~100%.
 
 ---
 
