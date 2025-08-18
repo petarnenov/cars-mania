@@ -21,9 +21,9 @@ describe('CreateCar.vue', () => {
     routerPush.mockReset()
     // restore fetch/FormData in case modified
     // @ts-ignore
-    global.fetch = undefined
+    globalThis.fetch = undefined
     // @ts-ignore
-    if ((global as any)._origFormData) global.FormData = (global as any)._origFormData
+    if ((globalThis as any)._origFormData) globalThis.FormData = (globalThis as any)._origFormData
   })
 
   function fillBasicFields(wrapper: any) {
@@ -95,17 +95,17 @@ describe('CreateCar.vue', () => {
     // Mock FormData to record appends
     const appended: Array<{ name: string; value: any }> = []
     // preserve original
-    ;(global as any)._origFormData = global.FormData
+    ;(globalThis as any)._origFormData = globalThis.FormData
     class MockFormData {
       append(name: string, value: any) { appended.push({ name, value }) }
     }
     // @ts-ignore
-    global.FormData = MockFormData
+    globalThis.FormData = MockFormData
 
     // Mock fetch
     const fetchMock = vi.fn(() => Promise.resolve({ ok: true })) as unknown as AnyFn
     // @ts-ignore
-    global.fetch = fetchMock
+    globalThis.fetch = fetchMock
 
     // Build 4 fake files
     const files = [0,1,2,3].map(i => new File([`x${i}`], `f${i}.png`, { type: 'image/png' }))

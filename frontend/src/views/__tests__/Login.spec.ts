@@ -28,7 +28,7 @@ describe('Login.vue', () => {
   })
 
   it('successful login redirects to /cars/new by default', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
     const wrapper = mount(Login)
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
@@ -36,12 +36,12 @@ describe('Login.vue', () => {
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }))
+    expect(globalThis.fetch).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }))
     expect(push).toHaveBeenCalledWith('/cars/new')
   })
 
   it('failed login shows error message', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Invalid credentials' }) }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Invalid credentials' }) }) as any
     const wrapper = mount(Login)
 
     await wrapper.find('input[type="email"]').setValue('bad@user')
@@ -54,7 +54,7 @@ describe('Login.vue', () => {
 
   it('passes along next query param on success', async () => {
     mockRoute.query = { next: '/inbox' }
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
 
     const wrapper = mount(Login)
     await wrapper.find('input[type="email"]').setValue('a@b.c')
@@ -66,7 +66,7 @@ describe('Login.vue', () => {
   })
 
   it('non-ok without JSON shows default error message', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => { throw new Error('no json') } }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => { throw new Error('no json') } }) as any
     const wrapper = mount(Login)
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
@@ -79,7 +79,7 @@ describe('Login.vue', () => {
   })
 
   it('network error shows default error message', async () => {
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network down')) as any
+    globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Network down')) as any
     const wrapper = mount(Login)
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')

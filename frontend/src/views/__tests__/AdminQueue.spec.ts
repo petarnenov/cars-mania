@@ -16,7 +16,7 @@ describe('AdminQueue.vue', () => {
     apiMock.mockReset()
     toastSuccess.mockReset()
     toastError.mockReset()
-    ;(global as any).prompt = vi.fn()
+    ;(globalThis as any).prompt = vi.fn()
   })
 
   it('loads and renders pending items', async () => {
@@ -60,7 +60,7 @@ describe('AdminQueue.vue', () => {
   })
 
   it('rejects an item with a reason and removes it', async () => {
-    ;(global as any).prompt = vi.fn(() => 'spam')
+    ;(globalThis as any).prompt = vi.fn(() => 'spam')
     apiMock.mockImplementation((path: string, init?: RequestInit) => {
       if (path.startsWith('/cars/admin/list')) {
         return Promise.resolve({ items: [ { id: 'c2', brand: 'Audi', model: 'A4', priceCents: 22200 } ] })
