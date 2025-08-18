@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
-// Force router to use memory history inside the real router module
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual<any>('vue-router')
   return { ...actual, createWebHistory: actual.createMemoryHistory }
@@ -25,36 +24,36 @@ async function waitForPath(expected: string, attempts = 50) {
   }
 }
 
-describe('Login.vue integration', () => {
+describe('Register.vue integration', () => {
   beforeEach(async () => {
-    // reset toasts and router
     toastState.items.splice(0, toastState.items.length)
     authState.user = null
     authState.loaded = true
   })
 
-  it('logs in and navigates to /cars/new with toasts', async () => {
+  it('registers and navigates to /cars/new with toasts', async () => {
     globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
+    await wrapper.find('input[type="text"]').setValue('Alice')
     await wrapper.find('input[type="email"]').setValue('a@b.c')
     await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
     await waitForPath('/cars/new')
     expect(router.currentRoute.value.path).toBe('/cars/new')
-    // Two toasts: Logged in and Navigated to /cars/new
+
     const messages = toastState.items.map(t => t.message)
-    expect(messages.some(m => m.includes('Logged in'))).toBe(true)
+    expect(messages.some(m => m.includes('Account created'))).toBe(true)
     expect(messages.some(m => m.includes('Navigated to /cars/new'))).toBe(true)
   })
 
   it('respects next query param and navigates there', async () => {
     globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
 
-    await router.push('/login?next=/inbox')
+    await router.push('/register?next=/inbox')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
@@ -63,58 +62,59 @@ describe('Login.vue integration', () => {
     await wrapper.find('form').trigger('submit.prevent')
     await waitForPath('/inbox')
     expect(router.currentRoute.value.path).toBe('/inbox')
+
     const messages = toastState.items.map(t => t.message)
-    expect(messages.some(m => m.includes('Logged in'))).toBe(true)
+    expect(messages.some(m => m.includes('Account created'))).toBe(true)
     expect(messages.some(m => m.includes('Navigated to /inbox'))).toBe(true)
   })
 
-  it('shows server error toast and stays on /login (non-ok with JSON)', async () => {
-    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Invalid credentials' }) }) as any
+  it('shows server error and stays on /register (non-ok with JSON)', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Email already registered' }) }) as any
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
-    await wrapper.find('input[type="email"]').setValue('a@b.c')
-    await wrapper.find('input[type="password"]').setValue('wrong')
+    await wrapper.find('input[type="email"]').setValue('exists@b.c')
+    await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
-    await waitForPath('/login')
+    await waitForPath('/register')
 
-    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.path).toBe('/register')
     const messages = toastState.items.map(t => t.message)
-    expect(messages.some(m => m.includes('Invalid credentials'))).toBe(true)
+    expect(messages.some(m => m.includes('Email already registered'))).toBe(true)
   })
 
-  it('shows default error when no JSON and stays on /login', async () => {
+  it('shows default error when no JSON and stays on /register', async () => {
     globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => { throw new Error('no json') } }) as any
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
-    await wrapper.find('input[type="password"]').setValue('wrong')
+    await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
-    await waitForPath('/login')
+    await waitForPath('/register')
 
-    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.path).toBe('/register')
     const messages = toastState.items.map(t => t.message)
-    expect(messages.some(m => m.includes('Login failed'))).toBe(true)
+    expect(messages.some(m => m.includes('Register failed'))).toBe(true)
   })
 
-  it('shows network error message and stays on /login', async () => {
+  it('shows network error and stays on /register', async () => {
     globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Network down')) as any
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
-    await wrapper.find('input[type="password"]').setValue('wrong')
+    await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
-    await waitForPath('/login')
+    await waitForPath('/register')
 
-    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.path).toBe('/register')
     const messages = toastState.items.map(t => t.message)
     expect(messages.some(m => m.includes('Network down'))).toBe(true)
   })
@@ -122,36 +122,35 @@ describe('Login.vue integration', () => {
   it('falls back to default error when server returns empty error string', async () => {
     globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: '' }) }) as any
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
-    await wrapper.find('input[type="password"]').setValue('wrong')
+    await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
-    await waitForPath('/login')
+    await waitForPath('/register')
 
-    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.path).toBe('/register')
     const messages = toastState.items.map(t => t.message)
-    expect(messages.some(m => m.includes('Login failed'))).toBe(true)
+    expect(messages.some(m => m.includes('Register failed'))).toBe(true)
   })
 
   it('falls back to default error when fetch rejects with non-Error', async () => {
-    // Rejection value without .message
     globalThis.fetch = vi.fn().mockRejectedValueOnce({}) as any
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
-    await wrapper.find('input[type="password"]').setValue('wrong')
+    await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
-    await waitForPath('/login')
+    await waitForPath('/register')
 
-    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.path).toBe('/register')
     const messages = toastState.items.map(t => t.message)
-    expect(messages.some(m => m.includes('Login failed'))).toBe(true)
+    expect(messages.some(m => m.includes('Register failed'))).toBe(true)
   })
 
   it('shows loading state (...) while request is pending', async () => {
@@ -160,7 +159,7 @@ describe('Login.vue integration', () => {
     // @ts-ignore
     globalThis.fetch = vi.fn().mockReturnValueOnce(pending)
 
-    await router.push('/login')
+    await router.push('/register')
     await router.isReady()
     const wrapper = mount(Root, { global: { plugins: [router] } })
 
@@ -168,10 +167,8 @@ describe('Login.vue integration', () => {
     await wrapper.find('input[type="password"]').setValue('123456')
     await wrapper.find('form').trigger('submit.prevent')
 
-    // While pending, button shows ...
     expect(wrapper.find('button[type="submit"]').text()).toBe('...')
 
-    // Resolve the fetch
     // @ts-ignore
     resolveFetch({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) })
     await waitForPath('/cars/new')
