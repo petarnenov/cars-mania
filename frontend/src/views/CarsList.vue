@@ -190,19 +190,19 @@ onMounted(loadSaved)
 			<div class="slider">
 				<label>Price: <b>{{ minPrice || 0 }}</b> - <b>{{ maxPrice || 50000 }}</b></label>
 				<div class="range">
-					<div class="track"></div>
-					<div class="fill" :style="fillStyle"></div>
-					<input type="range" min="0" :max="sliderMaxCap" step="500" v-model.number="sliderMin" />
-					<input type="range" min="0" :max="sliderMaxCap" step="500" v-model.number="sliderMax" />
+					<div class="track" />
+					<div class="fill" :style="fillStyle" />
+					<input v-model.number="sliderMin" type="range" min="0" :max="sliderMaxCap" step="500">
+					<input v-model.number="sliderMax" type="range" min="0" :max="sliderMaxCap" step="500">
 				</div>
 			</div>
 		</div>
 		<div class="filters">
-			<input v-model="brand" placeholder="Brand" />
-			<input v-model="model" placeholder="Model" />
-			<input v-model="color" placeholder="Color" />
-			<input v-model="fromYear" placeholder="From Year" type="number" min="1900" max="2100" />
-			<input v-model="toYear" placeholder="To Year" type="number" min="1900" max="2100" />
+			<input v-model="brand" placeholder="Brand">
+			<input v-model="model" placeholder="Model">
+			<input v-model="color" placeholder="Color">
+			<input v-model="fromYear" placeholder="From Year" type="number" min="1900" max="2100">
+			<input v-model="toYear" placeholder="To Year" type="number" min="1900" max="2100">
 			<select v-model="sort">
 				<option value="newest">Newest</option>
 				<option value="price_asc">Price ↑</option>
@@ -211,18 +211,18 @@ onMounted(loadSaved)
 		</div>
 		<div class="saved">
 			<div class="row">
-				<input v-model="saveName" placeholder="Save current as…" />
+				<input v-model="saveName" placeholder="Save current as…">
 				<button @click="saveCurrent">Save</button>
 			</div>
-			<div class="chips" v-if="savedFilters.length">
-				<span class="chip" v-for="f in savedFilters" :key="f.name" @click="applySaved(f)">{{ f.name }}<button class="x" @click.stop="removeSaved(f.name)">×</button></span>
+			<div v-if="savedFilters.length" class="chips">
+				<span v-for="f in savedFilters" :key="f.name" class="chip" @click="applySaved(f)">{{ f.name }}<button class="x" @click.stop="removeSaved(f.name)">×</button></span>
 			</div>
 		</div>
 		<p v-if="loading">Loading…</p>
 		<p v-if="error" class="error">{{ error }}</p>
 		<div class="grid">
 			<div v-for="c in items" :key="c.id" class="card" @click="openCar(c.id)">
-				<img v-if="c.images && c.images.length" class="thumb" :src="'/api' + c.images[0].url" alt="thumb" />
+				<img v-if="c.images && c.images.length" class="thumb" :src="'/api' + c.images[0].url" alt="thumb">
 				<div class="title">{{ c.brand }} {{ c.model }}</div>
 				<div class="meta">{{ new Date(c.firstRegistrationDate).getFullYear() }} • {{ c.color }}</div>
 				<div class="price">{{ (c.priceCents/100).toFixed(2) }}</div>

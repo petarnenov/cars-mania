@@ -102,7 +102,7 @@ function scrollToBottom() {
 		</div>
 		<div class="thread">
 			<div v-if="!selectedId" class="empty">Select a conversation</div>
-			<div v-else class="messages" ref="messagesEl">
+			<div v-else ref="messagesEl" class="messages">
 				<div v-for="m in messages" :key="m.id" class="msg" :class="m.senderId === authState.user?.id ? 'me' : 'them'">
 					<div class="bubble">
 						<div class="body">{{ m.body }}</div>
@@ -111,7 +111,7 @@ function scrollToBottom() {
 				</div>
 			</div>
 			<div v-if="selectedId" class="composer">
-				<textarea v-model="input" rows="2" placeholder="Type a message…"></textarea>
+				<textarea v-model="input" rows="2" placeholder="Type a message…" />
 				<button :disabled="sending || !input.trim()" @click="send">Send</button>
 			</div>
 		</div>

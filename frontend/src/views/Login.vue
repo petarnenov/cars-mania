@@ -45,9 +45,9 @@ async function onSubmit() {
 		<h1>Login</h1>
 		<form @submit.prevent="onSubmit">
 			<label>Email</label>
-			<input v-model="email" type="email" required />
+			<input v-model="email" type="email" required>
 			<label>Password</label>
-			<input v-model="password" type="password" required />
+			<input v-model="password" type="password" required>
 			<button :disabled="loading" type="submit">{{ loading ? '...' : 'Login' }}</button>
 			<p v-if="error" class="error">{{ error }}</p>
 		</form>

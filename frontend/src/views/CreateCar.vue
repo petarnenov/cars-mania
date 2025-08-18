@@ -87,15 +87,15 @@ async function uploadImages() {
 		<h1>New Car</h1>
 		<form @submit.prevent="createCar">
 			<label>Brand</label>
-			<input v-model="brand" required />
+			<input v-model="brand" required>
 			<label>Model</label>
-			<input v-model="model" required />
+			<input v-model="model" required>
 			<label>First registration</label>
-			<input v-model="firstRegistrationDate" type="date" required />
+			<input v-model="firstRegistrationDate" type="date" required>
 			<label>Color</label>
-			<input v-model="color" required />
+			<input v-model="color" required>
 			<label>Price</label>
-			<input v-model.number="price" type="number" step="0.01" min="0" required />
+			<input v-model.number="price" type="number" step="0.01" min="0" required>
 			<label>Description</label>
 			<textarea v-model="description" required rows="4" />
 			<button :disabled="loading" type="submit">{{ loading ? '...' : 'Create Draft' }}</button>
@@ -103,7 +103,7 @@ async function uploadImages() {
 		<div v-if="createdId" class="post-create">
 			<p>Created draft: {{ createdId }}</p>
 			<div class="uploader">
-				<input type="file" accept="image/*" multiple @change="files = ($event.target as HTMLInputElement).files" />
+				<input type="file" accept="image/*" multiple @change="files = ($event.target as HTMLInputElement).files">
 				<button :disabled="loading" @click="uploadImages">Upload up to 3 images</button>
 			</div>
 			<button :disabled="loading" @click="submitForReview">Submit for review</button>

@@ -46,11 +46,11 @@ async function onSubmit() {
 		<h1>Register</h1>
 		<form @submit.prevent="onSubmit">
 			<label>Name</label>
-			<input v-model="name" type="text" />
+			<input v-model="name" type="text">
 			<label>Email</label>
-			<input v-model="email" type="email" required />
+			<input v-model="email" type="email" required>
 			<label>Password</label>
-			<input v-model="password" type="password" required />
+			<input v-model="password" type="password" required>
 			<button :disabled="loading" type="submit">{{ loading ? '...' : 'Create Account' }}</button>
 			<p v-if="error" class="error">{{ error }}</p>
 		</form>

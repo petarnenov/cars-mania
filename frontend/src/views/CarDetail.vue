@@ -46,14 +46,14 @@ async function sendMessage() {
 		<p v-if="error" class="error">{{ error }}</p>
 		<div v-if="car">
 			<h1>{{ car.brand }} {{ car.model }}</h1>
-			<div class="gallery" v-if="car.images?.length">
-				<img v-for="img in car.images" :key="img.url" :src="'/api' + img.url" class="photo" />
+			<div v-if="car.images?.length" class="gallery">
+				<img v-for="img in car.images" :key="img.url" :src="'/api' + img.url" class="photo">
 			</div>
 			<p>{{ car.description }}</p>
 			<p><b>Color:</b> {{ car.color }} • <b>First reg:</b> {{ new Date(car.firstRegistrationDate).toLocaleDateString() }}</p>
 			<p class="price">{{ (car.priceCents/100).toFixed(2) }}</p>
 			<div v-if="authState.user && authState.user.id !== car.ownerId" class="msg">
-				<textarea v-model="message" rows="3" placeholder="Write a message to the seller..."></textarea>
+				<textarea v-model="message" rows="3" placeholder="Write a message to the seller..." />
 				<button :disabled="sending || !message.trim()" @click="sendMessage">Send</button>
 			</div>
 		</div>
