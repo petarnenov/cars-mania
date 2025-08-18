@@ -3,8 +3,11 @@ import request from 'supertest'
 import app from '../src/app'
 
 async function register(email: string, role: 'USER' | 'ADMIN' = 'USER') {
-  const reg = await request(app).post('/auth/register').send({ email, password: '123456', name: 'T' })
-  let cookieHeader = reg.get('set-cookie')
+  let res = await request(app).post('/auth/register').send({ email, password: '123456', name: 'T' })
+  if (res.status !== 201) {
+    res = await request(app).post('/auth/login').send({ email, password: '123456' })
+  }
+  let cookieHeader = res.get('set-cookie')
   let cookies = Array.isArray(cookieHeader) ? cookieHeader : cookieHeader ? [cookieHeader] : []
   if (role === 'ADMIN') {
     await request(app).post('/test/make-admin').send({ email })
@@ -17,8 +20,9 @@ async function register(email: string, role: 'USER' | 'ADMIN' = 'USER') {
 
 describe('cars routes', () => {
   it('USER can create draft, ADMIN cannot', async () => {
-    const sellerCookies = await register(`seller_${Date.now()}@ex.com`, 'USER')
-    const adminCookies = await register(`admin_${Date.now()}@ex.com`, 'ADMIN')
+    const uniq = `${Date.now()}_${Math.floor(Math.random()*1e6)}`
+    const sellerCookies = await register(`seller_${uniq}@ex.com`, 'USER')
+    const adminCookies = await register(`admin_${uniq}@ex.com`, 'ADMIN')
 
     const draftOk = await request(app)
       .post('/cars')
