@@ -16,19 +16,19 @@
 ## Principles we follow
 
 1) Test observable behavior, not implementation details
-- Assert rendered text, attributes, classes, navigation calls, toasts, and network calls—not internal refs.
+Assert rendered text, attributes, classes, navigation calls, toasts, and network calls—not internal refs.
 
 1) Keep each test self-contained and fast
-- Prefer unit tests with module mocks over end-to-end style browser tests.
+Prefer unit tests with module mocks over end-to-end style browser tests.
 
 1) Mock only what you must
-- Mock `api`, router, and auth where needed; leave Vue/browser behavior real.
+Mock `api`, router, and auth where needed; leave Vue/browser behavior real.
 
 1) Make asynchronous tests deterministic
-- Use fake timers for debounce/time-based UI and `await nextTick()`/`flushPromises()` for microtasks.
+Use fake timers for debounce/time-based UI and `await nextTick()`/`flushPromises()` for microtasks.
 
 1) Prefer `globalThis` for environment APIs
-- Works in both node and jsdom. Avoid `global`/`window` in TS tests.
+Works in both node and jsdom. Avoid `global`/`window` in TS tests.
 
 ## File layout and conventions
 
@@ -146,19 +146,19 @@ expect(push).not.toHaveBeenCalled()
 ## What we cover (current suite)
 
 1) Auth views: `Login`, `Register`
-- Redirect flow (default and `next`), error messages, network failure
+Redirect flow (default and `next`), error messages, network failure
 
 1) Catalog and detail: `CarsList`, `CarDetail`
-- Filters, debounce, pagination, card click; gallery render and message send
+Filters, debounce, pagination, card click; gallery render and message send
 
 1) Authoring and moderation: `CreateCar`, `AdminQueue`
-- Draft creation, image upload (<=3), submit for review; verify/reject with reason
+Draft creation, image upload (<=3), submit for review; verify/reject with reason
 
 1) Messaging: `Inbox`
-- Conversation list, unread badges, load/send messages
+Conversation list, unread badges, load/send messages
 
 1) UX infrastructure: `Toaster`, `router`
-- Auto-dismiss and styles; guards and route-change toasts
+Auto-dismiss and styles; guards and route-change toasts
 
 ## Writing a new spec (template)
 
