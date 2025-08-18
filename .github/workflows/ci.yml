@@ -32,6 +32,15 @@ jobs:
         working-directory: backend
         run: npm run build
 
+      - name: Backend tests
+        working-directory: backend
+        env:
+          JWT_ACCESS_SECRET: test_access_secret
+          JWT_REFRESH_SECRET: test_refresh_secret
+          ACCESS_TOKEN_TTL_SECONDS: 900
+          REFRESH_TOKEN_TTL_SECONDS: 1209600
+        run: npm run test:run
+
       - name: Install frontend deps
         working-directory: frontend
         run: npm ci
