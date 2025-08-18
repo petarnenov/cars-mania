@@ -29,7 +29,7 @@ describe('Register.vue', () => {
   })
 
   it('successful register redirects to /cars/new by default', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
     const wrapper = mount(Register)
 
     await wrapper.find('input[type="text"]').setValue('Alice')
@@ -38,12 +38,12 @@ describe('Register.vue', () => {
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/auth/register', expect.objectContaining({ method: 'POST' }))
+    expect(globalThis.fetch).toHaveBeenCalledWith('/api/auth/register', expect.objectContaining({ method: 'POST' }))
     expect(push).toHaveBeenCalledWith('/cars/new')
   })
 
   it('failed register shows server error message', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Email already registered' }) }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Email already registered' }) }) as any
     const wrapper = mount(Register)
 
     await wrapper.find('input[type="email"]').setValue('exists@b.c')
@@ -56,7 +56,7 @@ describe('Register.vue', () => {
   })
 
   it('non-ok without JSON shows default error message', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => { throw new Error('no json') } }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: false, json: async () => { throw new Error('no json') } }) as any
     const wrapper = mount(Register)
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
@@ -69,7 +69,7 @@ describe('Register.vue', () => {
   })
 
   it('network error shows error message and no redirect', async () => {
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network down')) as any
+    globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Network down')) as any
     const wrapper = mount(Register)
 
     await wrapper.find('input[type="email"]').setValue('a@b.c')
@@ -83,7 +83,7 @@ describe('Register.vue', () => {
 
   it('uses next query param for redirect on success', async () => {
     mockRoute.query = { next: '/inbox' }
-    global.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'u1', email: 'a@b.c', role: 'USER' }) }) as any
 
     const wrapper = mount(Register)
     await wrapper.find('input[type="email"]').setValue('a@b.c')

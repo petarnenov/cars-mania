@@ -124,7 +124,7 @@ describe('CreateCar.vue', () => {
 
     // Correct endpoint
     expect(fetchMock).toHaveBeenCalled()
-    const url = (fetchMock.mock.calls[0] as any[])[0]
+    const url = ((fetchMock as unknown as { mock: { calls: any[][] } }).mock.calls[0] as any[])[0]
     expect(String(url)).toContain('/api/upload/cars/car1/images')
   })
 
@@ -140,7 +140,8 @@ describe('CreateCar.vue', () => {
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
 
-    await wrapper.findAll('button').at(-1)!.trigger('click') // "Submit for review"
+    const btns = wrapper.findAll('button')
+    await btns[btns.length - 1].trigger('click') // "Submit for review"
     await flushPromises()
 
     const submitCall = apiMock.mock.calls.find(c => c[0] === '/cars/car1/submit')

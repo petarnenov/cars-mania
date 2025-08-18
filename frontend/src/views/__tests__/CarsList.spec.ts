@@ -13,7 +13,7 @@ vi.mock('vue-router', () => ({
 }))
 
 let lastPath = ''
-const apiMock = vi.fn(async (path: string) => {
+const apiMock = vi.fn(async (path: string, _init?: RequestInit) => {
   lastPath = path
   return { items: [{ id: 'c1', brand: 'BMW', model: 'M3', firstRegistrationDate: new Date().toISOString(), color: 'black', priceCents: 123456 }], total: 100 }
 })
@@ -38,7 +38,7 @@ describe('CarsList.vue', () => {
 
   it('loads with initial route query', async () => {
     mockRoute.query = { brand: 'BMW', fromYear: '2015', page: '2', sort: 'price_desc' }
-    const wrapper = mount(CarsList)
+    mount(CarsList)
     await flush()
 
     expect(apiMock).toHaveBeenCalled()
@@ -60,7 +60,7 @@ describe('CarsList.vue', () => {
     await flush()
 
     expect(replace).toHaveBeenCalled()
-    const arg = replace.mock.calls.at(-1)?.[0]
+    const arg = replace.mock.calls.slice(-1)[0]?.[0]
     expect(arg.query.brand).toBe('Audi')
     expect(apiMock).toHaveBeenCalled()
     expect(lastPath).toContain('brand=Audi')
@@ -75,7 +75,7 @@ describe('CarsList.vue', () => {
     await sliders[1].setValue(30000)
     await flush()
 
-    const arg = replace.mock.calls.at(-1)?.[0]
+    const arg = replace.mock.calls.slice(-1)[0]?.[0]
     expect(arg.query.minPrice).toBe('10000')
     expect(arg.query.maxPrice).toBe('30000')
   })
@@ -87,12 +87,12 @@ describe('CarsList.vue', () => {
 
     await wrapper.find('.pagination button:last-of-type').trigger('click')
     await flush()
-    let arg = replace.mock.calls.at(-1)?.[0]
+    let arg = replace.mock.calls.slice(-1)[0]?.[0]
     expect(arg.query.page).toBe('2')
 
     await wrapper.find('.pagination button:first-of-type').trigger('click')
     await flush()
-    arg = replace.mock.calls.at(-1)?.[0]
+    arg = replace.mock.calls.slice(-1)[0]?.[0]
     expect(arg.query.page).toBe('1')
   })
 
