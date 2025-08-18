@@ -97,3 +97,18 @@ jobs:
           context: ./frontend
           push: false
           tags: cars-mania-frontend:ci
+
+      - name: Docker Compose up (smoke and e2e)
+        run: |
+          docker compose up -d --build
+          # wait for services
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3001/health >/dev/null; then echo backend up; break; fi; sleep 1; done
+          # run playwright against dockerized site
+          cd frontend
+          E2E_DOCKER=1 E2E_BASE_URL=http://localhost:5173 npm run e2e
+          cd ..
+          docker compose logs backend | tail -n 200 || true
+        env:
+          JWT_ACCESS_SECRET: test_access_secret
+          JWT_REFRESH_SECRET: test_refresh_secret

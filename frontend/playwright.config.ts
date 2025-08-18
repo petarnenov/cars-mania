@@ -4,8 +4,8 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
 	reporter: [['list'], ['html', { open: 'never' }]],
 	testDir: 'tests-e2e',
-	globalSetup: './tests-e2e/global-setup.ts',
-	globalTeardown: './tests-e2e/global-teardown.ts',
+	globalSetup: process.env.E2E_DOCKER === '1' ? undefined : './tests-e2e/global-setup.ts',
+	globalTeardown: process.env.E2E_DOCKER === '1' ? undefined : './tests-e2e/global-teardown.ts',
 	use: {
 		baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',
 		headless: process.env.HEADLESS !== 'false',
@@ -14,13 +14,15 @@ export default defineConfig({
 		screenshot: process.env.E2E_VERBOSE === '1' ? 'on' : 'only-on-failure',
 		launchOptions: { slowMo: Number(process.env.SLOWMO || '0') },
 	},
-	webServer: {
-		command: 'npm run dev',
-		url: 'http://localhost:5173',
-		env: { BACKEND_URL: 'http://127.0.0.1:3301' },
-		reuseExistingServer: true,
-		timeout: 60_000,
-	},
+	webServer: process.env.E2E_DOCKER === '1'
+		? undefined
+		: {
+			command: 'npm run dev',
+			url: 'http://localhost:5173',
+			env: { BACKEND_URL: 'http://127.0.0.1:3301' },
+			reuseExistingServer: true,
+			timeout: 60_000,
+		},
 	projects: [
 		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
 	],
