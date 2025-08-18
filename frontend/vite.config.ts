@@ -18,10 +18,11 @@ export default defineConfig({
 
 	test: {
 		environment: 'jsdom',
+		setupFiles: ['./vitest.setup.ts'],
 		coverage: {
 			reporter: ['text', 'html'],
 			provider: 'v8',
 		},
-		exclude: [...configDefaults.exclude, 'e2e/**'],
+		exclude: [...configDefaults.exclude, 'e2e/**', 'tests-e2e/**'],
 	},
 })
