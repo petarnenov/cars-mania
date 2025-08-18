@@ -1,11 +1,11 @@
 # Cars Mania — Prioritized Build Plan (MVP → Launch)
 
-### Goals
+## Goals
 
 - **MVP**: Public catalog of verified car ads; registration/login; create/edit/delete own ad; admin verification workflow; up to 3 photos per ad; message seller from an ad; basic search/filter.
 - **Roles**: Guest (browse/search), Registered User (post/manage, send/receive messages), Admin (verify/moderate, manage users/ads).
 
-### Chosen Tech Stack
+## Chosen Tech Stack
 
 - **Frontend**: Vite + Vue 3 (TypeScript), Vue Router, Vitest + Vue Test Utils + jsdom, ESLint (v9 flat config), simple Toaster.
 - **Backend**: Node.js (Express), TypeScript, Prisma ORM.
@@ -16,7 +16,7 @@
 
 ---
 
-### Phase 0 — Project Foundation
+## Phase 0 — Project Foundation
 
 1) Repo and workspace
 
@@ -42,7 +42,7 @@
 
 ---
 
-### Phase 1 — AuthN/AuthZ (blocking)
+## Phase 1 — AuthN/AuthZ (blocking)
 
 1) Registration & login
 
@@ -63,7 +63,7 @@
 
 ---
 
-### Phase 2 — Car Listing Domain (unverified → verified)
+## Phase 2 — Car Listing Domain (unverified → verified)
 
 1) Data model (minimum)
 
@@ -85,7 +85,7 @@
 
 ---
 
-### Phase 3 — Admin Verification Workflow
+## Phase 3 — Admin Verification Workflow
 
 1) Admin dashboard
 
@@ -110,7 +110,7 @@
 
 ---
 
-### Phase 4 — Images (max 3) & Storage
+## Phase 4 — Images (max 3) & Storage
 
 1) Upload flow
 
@@ -128,7 +128,7 @@
 
 ---
 
-### Phase 5 — Messaging (Ad → Owner)
+## Phase 5 — Messaging (Ad → Owner)
 
 1) Data model
 
@@ -157,7 +157,7 @@
 
 ---
 
-### Phase 6 — UX Polish & Search
+## Phase 6 — UX Polish & Search
 
 1) Catalog
 
@@ -177,7 +177,7 @@
 
 ---
 
-### Phase 7 — Non‑Functional Baseline
+## Phase 7 — Non‑Functional Baseline
 
 1) Security
 
@@ -198,7 +198,7 @@
 
 ---
 
-### Phase 8 — Deployment & Operations
+## Phase 8 — Deployment & Operations
 
 1) Environments
 
@@ -218,7 +218,7 @@
 
 ---
 
-### Endpoints (actual MVP)
+## Endpoints (actual MVP)
 
 - Auth: `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`.
 - Cars: `POST /cars` (user), `PUT /cars/:id`, `DELETE /cars/:id`, `POST /cars/:id/submit`, `GET /cars` (verified for guests), `GET /cars/:id`.
@@ -228,7 +228,7 @@
 
 ---
 
-### Testing & Quality (added)
+## Testing & Quality (added)
 
 - ✅ ESLint v9 flat config enabled; autofix script added.
 - ✅ Unit tests (Vitest + Vue Test Utils): `Login`, `Register`, `CarsList`, `CreateCar`, `CarDetail`, `Inbox`, `AdminQueue`, `Toaster`, and `router` guards.
@@ -236,7 +236,7 @@
 
 ---
 
-### Cutline for MVP (ship this first)
+## Cutline for MVP (ship this first)
 
 - ✅ Auth (register/login), User role, Admin role.
 - ✅ Create/edit/delete car, submit for review; admin verify/reject with reason.
@@ -246,7 +246,7 @@
 
 ---
 
-### Risks / Nice-to-haves (post-MVP)
+## Risks / Nice-to-haves (post-MVP)
 
 - Email verification + password reset.
 - Moderation tooling (spam/abuse, image scanning).
@@ -256,7 +256,7 @@
 
 ---
 
-### Acceptance Checklist (verify before launch)
+## Acceptance Checklist (verify before launch)
 
 - ✅ Guests cannot post; only see verified ads.
 - ✅ Users can post, upload max 3 images, submit for review; cannot see unverified ads from others.
