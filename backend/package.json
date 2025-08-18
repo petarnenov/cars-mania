@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "vitest -c vitest.config.ts",
+    "test:run": "vitest run -c vitest.config.ts",
     "dev": "nodemon --watch src --ext ts,json --exec tsx src/index.ts",
     "build": "tsc -p .",
     "start": "node dist/index.js",
