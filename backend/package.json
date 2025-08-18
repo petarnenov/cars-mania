@@ -10,7 +10,9 @@
     "build": "tsc -p .",
     "start": "node dist/index.js",
     "make:admin": "tsx scripts/makeAdmin.ts",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,9 @@
     "@types/node": "^24.3.0",
     "@types/supertest": "^6.0.2",
     "@vitest/coverage-v8": "^3.2.4",
+    "@typescript-eslint/eslint-plugin": "^8.9.0",
+    "@typescript-eslint/parser": "^8.9.0",
+    "eslint": "^9.11.1",
     "nodemon": "^3.1.10",
     "prisma": "^6.14.0",
     "supertest": "^7.0.0",
