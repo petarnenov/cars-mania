@@ -33,7 +33,7 @@ jobs:
         env:
           NODE_ENV: test
           DATABASE_URL: file:./unit-test.db
-        run: npx prisma db push
+        run: npx prisma db push --skip-generate --schema=prisma/schema.prisma
 
       - name: Type-check backend
         working-directory: backend

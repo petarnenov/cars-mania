@@ -4,10 +4,12 @@ import app from '../src/app'
 
 async function register(email: string, role: 'USER' | 'ADMIN' = 'USER') {
   const reg = await request(app).post('/auth/register').send({ email, password: '123456', name: 'T' })
+  const cookieHeader = reg.get('set-cookie')
+  const cookies = Array.isArray(cookieHeader) ? cookieHeader : cookieHeader ? [cookieHeader] : []
   if (role === 'ADMIN') {
-    await request(app).post('/test/make-admin').send({ email })
+    await request(app).post('/test/make-admin').set('Cookie', cookies).send({ email })
   }
-  return reg.get('set-cookie')
+  return cookies
 }
 
 describe('cars routes', () => {
