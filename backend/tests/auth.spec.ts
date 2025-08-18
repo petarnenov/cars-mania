@@ -16,8 +16,9 @@ describe('auth', () => {
       .post('/auth/register')
       .send({ email: `t${Date.now()}@ex.com`, password: '123456', name: 'T' });
     expect(res.status).toBe(200);
-    const cookies = res.get('set-cookie');
-    expect(cookies?.join(';')).toContain('accessToken=');
+    const cookieHeader = res.get('set-cookie');
+    const cookies = Array.isArray(cookieHeader) ? cookieHeader : cookieHeader ? [cookieHeader] : [];
+    expect(cookies.join(';')).toContain('accessToken=');
 
     const me = await request(app).get('/auth/me').set('Cookie', cookies);
     expect(me.status).toBe(200);
