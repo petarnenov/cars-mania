@@ -28,6 +28,13 @@ jobs:
         working-directory: backend
         run: npm ci
 
+      - name: Prepare backend test DB (Prisma push)
+        working-directory: backend
+        env:
+          NODE_ENV: test
+          DATABASE_URL: file:./unit-test.db
+        run: npx prisma db push
+
       - name: Type-check backend
         working-directory: backend
         run: npm run build
@@ -39,6 +46,7 @@ jobs:
           JWT_REFRESH_SECRET: test_refresh_secret
           ACCESS_TOKEN_TTL_SECONDS: 900
           REFRESH_TOKEN_TTL_SECONDS: 1209600
+          DATABASE_URL: file:./unit-test.db
         run: npm run test:run
 
       - name: Install frontend deps
