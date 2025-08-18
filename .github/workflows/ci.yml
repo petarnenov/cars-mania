@@ -146,13 +146,13 @@ jobs:
           # wait for services
           up=0
           for i in {1..60}; do
-            if curl -fsS http://localhost:3001/health >/dev/null; then echo backend up; up=1; break; fi; sleep 1; done
+            if curl -fsS http://127.0.0.1:3001/health >/dev/null; then echo backend up; up=1; break; fi; sleep 1; done
           if [ "$up" != "1" ]; then echo "backend did not become ready"; docker compose -f docker-compose.ci.yml logs backend || true; exit 1; fi
           # run playwright against dockerized site
           cd frontend
           npm ci
           npx playwright install --with-deps
-          E2E_DOCKER=1 E2E_BASE_URL=http://localhost:5173 npm run e2e
+          E2E_DOCKER=1 E2E_BASE_URL=http://localhost:5173 BACKEND_URL=http://127.0.0.1:3001 npm run e2e
           cd ..
           docker compose logs backend | tail -n 200 || true
         env:

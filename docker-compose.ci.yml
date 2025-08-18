@@ -14,6 +14,7 @@ services:
       - uploads:/app/uploads
     ports:
       - "3001:3001"
+      - "3301:3001"
     command: ["node", "dist/index.js"]
   frontend:
     image: ${FRONTEND_IMAGE}
