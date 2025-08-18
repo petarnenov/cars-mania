@@ -10,6 +10,8 @@ COPY src ./src
 RUN npx prisma generate
 # Build TypeScript
 RUN npm run build
+# Copy generated Prisma client next to compiled JS (dist expects ../generated/prisma)
+RUN mkdir -p dist/generated && cp -r src/generated/prisma dist/generated/prisma
 
 # ===== Runner =====
 FROM node:20-alpine AS runner
