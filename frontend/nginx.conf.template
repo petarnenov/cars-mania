@@ -10,10 +10,9 @@ server {
     }
 
     # Proxy API to backend container (docker-compose service name: backend)
-    # Only proxy if backend is available (for production deployment)
+    # This will be replaced at runtime if backend is available
     location /api/ {
         # Return 404 for API calls when backend is not available
         return 404;
     }
 }
-
