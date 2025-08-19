@@ -1,5 +1,5 @@
 # ===== Builder =====
-FROM node:20-alpine3.20 AS builder
+FROM node:22-alpine3.20 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -14,7 +14,7 @@ RUN npm run build
 RUN mkdir -p dist/generated && cp -r src/generated/prisma dist/generated/prisma
 
 # ===== Runner =====
-FROM node:20-alpine3.20 AS runner
+FROM node:22-alpine3.20 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apk --no-cache upgrade

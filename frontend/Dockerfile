@@ -1,5 +1,5 @@
 # Build and serve static frontend with nginx
-FROM node:20-alpine3.20 AS builder
+FROM node:22-alpine3.20 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
