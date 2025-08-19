@@ -86,7 +86,7 @@ else
 fi
 
 # Test connection from new terminal (don't close current one!)
-ssh cars-mania@YOUR_SERVER_IP
+ssh cars-mania@206.189.169.189
 ```
 
 ## Step 3: Install Required Software
