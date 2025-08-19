@@ -104,7 +104,15 @@ log_success "SSH directory configured"
 log_info "Configuring SSH security..."
 sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
 sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
-systemctl restart sshd
+
+# Restart SSH service (handle different service names)
+if systemctl list-unit-files | grep -q "sshd.service"; then
+    systemctl restart sshd
+elif systemctl list-unit-files | grep -q "ssh.service"; then
+    systemctl restart ssh
+else
+    log_warning "SSH service not found, please restart manually"
+fi
 log_success "SSH security configured"
 
 # Step 11: Create setup completion script

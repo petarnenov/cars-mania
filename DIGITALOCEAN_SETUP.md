@@ -76,8 +76,14 @@ Port 22
 ```
 
 ```bash
-# Restart SSH service
-sudo systemctl restart sshd
+# Restart SSH service (handle different service names)
+if sudo systemctl list-unit-files | grep -q "sshd.service"; then
+    sudo systemctl restart sshd
+elif sudo systemctl list-unit-files | grep -q "ssh.service"; then
+    sudo systemctl restart ssh
+else
+    echo "SSH service not found, please restart manually"
+fi
 
 # Test connection from new terminal (don't close current one!)
 ssh cars-mania@YOUR_SERVER_IP
@@ -457,7 +463,20 @@ crontab -e
 
 ### Common Issues
 
-1. **Services won't start**
+1. **SSH service issues**
+   ```bash
+   # Check SSH service status
+   sudo systemctl status sshd
+   sudo systemctl status ssh
+   
+   # Check SSH service name
+   sudo systemctl list-unit-files | grep ssh
+   
+   # Manual SSH restart
+   sudo systemctl restart sshd  # or ssh
+   ```
+
+2. **Services won't start**
    ```bash
    # Check logs
    ./deploy.sh logs
