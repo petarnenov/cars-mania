@@ -8,7 +8,11 @@ const mockRoute: { query: Record<string, string> } = { query: {} }
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
   useRoute: () => mockRoute,
-  RouterLink: { name: 'RouterLink', render: () => null },
+  RouterLink: {
+    name: 'RouterLink',
+    template: '<a><slot /></a>',
+    props: ['to']
+  },
 }))
 
 const flushPromises = () => new Promise((r) => setTimeout(r))
