@@ -90,9 +90,9 @@ router.get('/', async (req, res) => {
   const skip = (Math.max(parseInt(page || '1', 10) || 1, 1) - 1) * take;
 
   const where: any = { status: 'VERIFIED' };
-  if (brand) where.brand = { contains: brand, mode: 'insensitive' };
-  if (model) where.model = { contains: model, mode: 'insensitive' };
-  if (color) where.color = { contains: color, mode: 'insensitive' };
+  if (brand) where.brand = { contains: brand };
+  if (model) where.model = { contains: model };
+  if (color) where.color = { contains: color };
   if (minPrice) where.priceCents = { ...(where.priceCents || {}), gte: Number(minPrice) };
   if (maxPrice) where.priceCents = { ...(where.priceCents || {}), lte: Number(maxPrice) };
   if (fromYear) where.firstRegistrationDate = { ...(where.firstRegistrationDate || {}), gte: new Date(Number(fromYear), 0, 1) };
