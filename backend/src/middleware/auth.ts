@@ -17,7 +17,7 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
     const payload = verifyAccessToken(token);
     req.user = { id: payload.sub, role: payload.role };
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 }

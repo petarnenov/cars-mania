@@ -3,7 +3,7 @@ import argon2 from 'argon2'
 
 async function main() {
   const adminEmail = 'admin@demo.test'
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: adminEmail },
     update: { role: 'ADMIN' },
     create: { email: adminEmail, passwordHash: await argon2.hash('123456'), role: 'ADMIN', name: 'Admin' },
