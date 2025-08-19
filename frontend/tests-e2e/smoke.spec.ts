@@ -19,7 +19,7 @@ test.describe('Cars Mania smoke flow', () => {
 		await regForm.locator('input[type="email"]').fill(email)
 		await regForm.locator('input[type="password"]').fill('123456')
 		await page.getByRole('button', { name: /create account/i }).click()
-		await page.waitForURL('**/cars/new', { timeout: 10000 })
+		await page.waitForFunction(() => location.pathname.endsWith('/cars/new'))
 		await expect(page.getByRole('heading', { name: 'New Car' })).toBeVisible()
 
 		// Create a draft (minimal fields)
