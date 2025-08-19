@@ -18,8 +18,31 @@ test.describe('Cars Mania smoke flow', () => {
 		await regForm.locator('input[type="text"]').first().fill('E2E User')
 		await regForm.locator('input[type="email"]').fill(email)
 		await regForm.locator('input[type="password"]').fill('123456')
+		
+		// Click the register button and wait for navigation
 		await page.getByRole('button', { name: /create account/i }).click()
-		await page.waitForURL('**/cars/new')
+		
+		// Wait for either success toast or error
+		await page.waitForFunction(() => {
+			const toasts = document.querySelectorAll('.toaster .toast')
+			return toasts.length > 0
+		}, { timeout: 10000 })
+		
+		// Check if registration was successful
+		const successToast = page.locator('.toaster .toast.success')
+		const errorToast = page.locator('.toaster .toast.error')
+		
+		await expect(successToast.or(errorToast)).toBeVisible({ timeout: 5000 })
+		
+		// If there's an error, log it and fail the test
+		if (await errorToast.isVisible()) {
+			const errorText = await errorToast.textContent()
+			console.log('Registration error:', errorText)
+			throw new Error(`Registration failed: ${errorText}`)
+		}
+		
+		// Wait for navigation to cars/new
+		await page.waitForURL('**/cars/new', { timeout: 15000 })
 		await expect(page.getByRole('heading', { name: 'New Car' })).toBeVisible()
 
 		// Create a draft (minimal fields)

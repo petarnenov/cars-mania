@@ -8,7 +8,7 @@ export default defineConfig({
 	globalTeardown: process.env.E2E_DOCKER === '1' ? undefined : './tests-e2e/global-teardown.ts',
 	use: {
 		baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',
-		headless: process.env.HEADLESS !== 'false',
+		headless: true,
 		trace: process.env.E2E_VERBOSE === '1' ? 'on' : 'retain-on-failure',
 		video: process.env.E2E_VERBOSE === '1' ? 'on' : 'retain-on-failure',
 		screenshot: process.env.E2E_VERBOSE === '1' ? 'on' : 'only-on-failure',
@@ -19,13 +19,14 @@ export default defineConfig({
 		: {
 			command: 'npm run dev',
 			url: 'http://localhost:5173',
-			env: { BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:3301' },
+			env: { BACKEND_URL: 'http://127.0.0.1:3301' },
 			reuseExistingServer: true,
 			timeout: 60_000,
 		},
 	projects: [
 		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
 	],
+	workers: 1, // Reduce workers to avoid race conditions
 })
 
 
