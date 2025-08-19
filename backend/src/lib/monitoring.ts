@@ -23,13 +23,15 @@ export interface ApplicationMetrics {
   performance: { p95ResponseTime: number; p99ResponseTime: number }
 }
 
+type HealthStatus = 'healthy' | 'unhealthy'
+
 export interface HealthCheck {
   status: 'healthy' | 'degraded' | 'unhealthy'
   checks: {
-    database: { status: 'healthy' | 'unhealthy'; responseTime: number }
-    disk: { status: 'healthy' | 'unhealthy'; usage: number }
-    memory: { status: 'healthy' | 'unhealthy'; usage: number }
-    cpu: { status: 'healthy' | 'unhealthy'; usage: number }
+    database: { status: HealthStatus; responseTime: number }
+    disk: { status: HealthStatus; usage: number }
+    memory: { status: HealthStatus; usage: number }
+    cpu: { status: HealthStatus; usage: number }
   }
   timestamp: string
   alerts: string[]
@@ -216,11 +218,11 @@ class MonitoringService {
   }
 
   async getHealthCheck(): Promise<HealthCheck> {
-    const checks = {
-      database: { status: 'unhealthy' as const, responseTime: 0 },
-      disk: { status: 'unhealthy' as const, usage: 0 },
-      memory: { status: 'unhealthy' as const, usage: 0 },
-      cpu: { status: 'unhealthy' as const, usage: 0 }
+    const checks: HealthCheck['checks'] = {
+      database: { status: 'unhealthy', responseTime: 0 },
+      disk: { status: 'unhealthy', usage: 0 },
+      memory: { status: 'unhealthy', usage: 0 },
+      cpu: { status: 'unhealthy', usage: 0 }
     }
 
     // Database health check
@@ -239,8 +241,8 @@ class MonitoringService {
     const systemMetrics = await this.getSystemMetrics()
     
     checks.disk.usage = systemMetrics.disk.usagePercent
-    checks.disk.status = systemMetrics.disk.usagePercent > this.THRESHOLDS.DISK_CRITICAL ? 'unhealthy' 
-      : systemMetrics.disk.usagePercent > this.THRESHOLDS.DISK_WARNING ? 'unhealthy' 
+    checks.disk.status = systemMetrics.disk.usagePercent > this.THRESHOLDS.DISK_CRITICAL ? 'unhealthy'
+      : systemMetrics.disk.usagePercent > this.THRESHOLDS.DISK_WARNING ? 'unhealthy'
       : 'healthy'
 
     checks.memory.usage = systemMetrics.memory.usagePercent
@@ -312,17 +314,23 @@ class MonitoringService {
       const lines = stdout.trim().split('\n')
       const [, ...dataLines] = lines
       
-      if (dataLines.length > 0) {
-        const [, total, used, available] = dataLines[0].split(/\s+/)
-        const totalKB = parseInt(total) * 1024
-        const usedKB = parseInt(used) * 1024
-        const freeKB = parseInt(available) * 1024
+      if (dataLines.length > 0 && dataLines[0]) {
+        const parts = dataLines[0].split(/\s+/)
+        const total = parts[1]
+        const used = parts[2]
+        const available = parts[3]
         
-        return {
-          total: totalKB,
-          used: usedKB,
-          free: freeKB,
-          usagePercent: (usedKB / totalKB) * 100
+        if (total && used && available) {
+          const totalKB = parseInt(total) * 1024
+          const usedKB = parseInt(used) * 1024
+          const freeKB = parseInt(available) * 1024
+        
+          return {
+            total: totalKB,
+            used: usedKB,
+            free: freeKB,
+            usagePercent: (usedKB / totalKB) * 100
+          }
         }
       }
     } catch (error) {
@@ -355,9 +363,11 @@ class MonitoringService {
       for (const line of lines) {
         if (line.includes('eth0') || line.includes('en0') || line.includes('lo')) {
           const parts = line.split(/\s+/)
-          if (parts.length >= 4) {
-            bytesIn += parseInt(parts[3]) || 0
-            bytesOut += parseInt(parts[7]) || 0
+          if (parts.length >= 8) {
+            const bytesInPart = parts[3]
+            const bytesOutPart = parts[7]
+            if (bytesInPart) bytesIn += parseInt(bytesInPart) || 0
+            if (bytesOutPart) bytesOut += parseInt(bytesOutPart) || 0
           }
         }
       }
@@ -389,7 +399,7 @@ export function monitoringMiddleware(prisma: PrismaClient) {
     const originalEnd = res.end
     res.end = function(chunk?: any, encoding?: any) {
       monitoring.trackRequest(req, res, startTime)
-      originalEnd.call(this, chunk, encoding)
+      return originalEnd.call(this, chunk, encoding)
     }
     
     next()
