@@ -13,14 +13,14 @@ describe('auth', () => {
   it('register + me', async () => {
     Object.assign(process.env, baseEnv);
     const res = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ email: `t${Date.now()}@ex.com`, password: '123456', name: 'T' });
     expect([200, 201]).toContain(res.status);
     const cookieHeader = res.get('set-cookie');
     const cookies = Array.isArray(cookieHeader) ? cookieHeader : cookieHeader ? [cookieHeader] : [];
     expect(cookies.join(';')).toContain('accessToken=');
 
-    const me = await request(app).get('/auth/me').set('Cookie', cookies);
+    const me = await request(app).get('/api/auth/me').set('Cookie', cookies);
     expect(me.status).toBe(200);
     expect(me.body?.email).toBeDefined();
   });

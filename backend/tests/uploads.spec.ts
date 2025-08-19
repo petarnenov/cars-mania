@@ -5,7 +5,7 @@ import path from 'node:path'
 import app from '../src/app'
 
 async function register(email: string) {
-  const res = await request(app).post('/auth/register').send({ email, password: '123456', name: 'T' })
+  const res = await request(app).post('/api/auth/register').send({ email, password: '123456', name: 'T' })
   const ck = res.get('set-cookie')
   return Array.isArray(ck) ? ck : ck ? [ck] : []
 }
@@ -14,7 +14,7 @@ describe('uploads', () => {
   it('owner can upload up to 3 images, and max constraint enforced', async () => {
     const sellerCk = await register(`uploader_${Date.now()}@ex.com`)
     const draft = await request(app)
-      .post('/cars')
+      .post('/api/cars')
       .set('Cookie', sellerCk)
       .send({ brand: 'Audi', model: 'A3', firstRegistrationDate: '2020-01-01', color: 'red', priceCents: 1200000, description: 'ok' })
     expect(draft.status).toBe(201)
@@ -33,7 +33,7 @@ describe('uploads', () => {
     const f4 = mkFile('4.png')
 
     const upOk = await request(app)
-      .post(`/upload/cars/${carId}/images`)
+      .post(`/api/upload/cars/${carId}/images`)
       .set('Cookie', sellerCk)
       .attach('images', f1)
       .attach('images', f2)
@@ -43,7 +43,7 @@ describe('uploads', () => {
     expect(upOk.body.length).toBe(3)
 
     const upTooMany = await request(app)
-      .post(`/upload/cars/${carId}/images`)
+      .post(`/api/upload/cars/${carId}/images`)
       .set('Cookie', sellerCk)
       .attach('images', f4)
     expect(upTooMany.status).toBe(400)
