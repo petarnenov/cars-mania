@@ -7,7 +7,14 @@ test.describe('Admin moderation', () => {
     const api = await pwRequest.newContext({ baseURL: 'http://127.0.0.1:3301' })
     // Seller registers and creates a draft, then submits for review
     const sellerEmail = `seller_${Date.now()}@test.dev`
-    const reg = await api.post('/auth/register', { data: { email: sellerEmail, password: '123456', name: 'Seller' } })
+    let reg = await api.post('/auth/register', { data: { email: sellerEmail, password: '123456', name: 'Seller' } })
+    if (!reg.ok()) {
+      // retry briefly in case backend is still warming up
+      for (let i = 0; i < 5 && !reg.ok(); i++) {
+        await new Promise(r => setTimeout(r, 200))
+        reg = await api.post('/auth/register', { data: { email: sellerEmail, password: '123456', name: 'Seller' } })
+      }
+    }
     expect(reg.ok()).toBeTruthy()
     const create = await api.post('/cars', {
       data: {

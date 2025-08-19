@@ -4,9 +4,13 @@ test.describe('Messaging', () => {
 	test('owner cannot message own ad (negative)', async ({ page, request }) => {
 		// Create seller and draft via API for speed and determinism
 		const email = `seller_${Date.now()}@test.dev`
-		const register = await request.post('/api/auth/register', {
-			data: { email, password: '123456', name: 'Seller' },
-		})
+		let register = await request.post('/api/auth/register', { data: { email, password: '123456', name: 'Seller' } })
+		if (!register.ok()) {
+			for (let i = 0; i < 5 && !register.ok(); i++) {
+				await new Promise(r => setTimeout(r, 200))
+				register = await request.post('/api/auth/register', { data: { email, password: '123456', name: 'Seller' } })
+			}
+		}
 		expect(register.ok()).toBeTruthy()
 		const create = await request.post('/api/cars', {
 			data: {
