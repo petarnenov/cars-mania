@@ -265,3 +265,4 @@
 - ✅ Messaging works end-to-end with access control.
 - ✅ All inputs validated; basic security and rate limits enabled.
 - ✅ CI/CD green; staging closely mirrors production.
+- ✅ Production deployment with auto-updating containers and health checks.
