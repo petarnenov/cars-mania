@@ -14,6 +14,8 @@ services:
       - uploads:/app/uploads
     ports:
       - "3001:3001"
+    networks:
+      - ci-network
   # Use default CMD from Dockerfile (with DB init)
   frontend:
     image: ${FRONTEND_IMAGE}
@@ -22,6 +24,14 @@ services:
       - backend
     ports:
       - "5173:80"
+    environment:
+      - BACKEND_URL=http://backend:3001
+    networks:
+      - ci-network
 volumes:
   backend_data:
   uploads:
+
+networks:
+  ci-network:
+    driver: bridge

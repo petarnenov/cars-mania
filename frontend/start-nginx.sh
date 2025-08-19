@@ -14,8 +14,35 @@ if [ -n "$BACKEND_HOST" ] && [ -n "$BACKEND_PORT" ]; then
     # Check if backend is available
     if nc -z "$BACKEND_HOST" "$BACKEND_PORT" 2>/dev/null; then
         echo "Backend is available, enabling API proxy..."
-        # Replace the API location block with proxy configuration
-        sed -i "s|location /api/ {|location /api/ {\n        proxy_pass $BACKEND_URL/api/;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade \$http_upgrade;\n        proxy_set_header Connection \"upgrade\";\n        proxy_set_header Host \$host;\n        proxy_cache_bypass \$http_upgrade;\n        proxy_connect_timeout 1s;\n        proxy_send_timeout 1s;\n        proxy_read_timeout 1s;|" /etc/nginx/conf.d/default.conf
+                        # Replace the entire API location block with proxy configuration (only if not already configured)
+                if ! grep -q "proxy_pass.*$BACKEND_URL" /etc/nginx/conf.d/default.conf; then
+                    # Create a new nginx config with the proxy
+                    cat > /etc/nginx/conf.d/default.conf << EOF
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass $BACKEND_URL/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_connect_timeout 1s;
+        proxy_send_timeout 1s;
+        proxy_read_timeout 1s;
+    }
+}
+EOF
+                fi
     else
         echo "Backend not available, API calls will return 404"
     fi
