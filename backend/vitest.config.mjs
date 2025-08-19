@@ -3,6 +3,13 @@ export default {
 	test: {
 		environment: 'node',
 		setupFiles: ['./tests/setup.ts'],
+		// Run tests sequentially to avoid database conflicts
+		pool: 'forks',
+		poolOptions: {
+			forks: {
+				singleFork: true
+			}
+		},
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html'],
