@@ -1,122 +1,132 @@
 # Automatic Versioning System
 
-This project includes an automatic versioning system that bumps versions for both frontend and backend packages on each commit.
+This document describes the automatic versioning system used in the Cars Mania 
+project to maintain consistent version numbers across frontend and backend.
+
+## Overview
+
+The versioning system automatically increments version numbers when changes are 
+committed, ensuring both frontend and backend stay in sync.
 
 ## How It Works
 
-The versioning system automatically increments versions based on commit messages and staged files:
-
-- **Patch** (1.0.0 → 1.0.1): Bug fixes, documentation updates
-- **Minor** (1.0.0 → 1.1.0): New features, non-breaking changes
-- **Major** (1.0.0 → 2.0.0): Breaking changes
-
-## Setup
-
-1. **Install dependencies:**
-   ```bash
-   npm run install:all
-   ```
-
-2. **Set up Git hooks:**
-   ```bash
-   npm run setup:git-hooks
-   ```
-
-## Usage
-
-### Automatic Versioning (Recommended)
-
-The system automatically bumps versions on commits when source files are modified:
-
-```bash
-git add .
-git commit -m "feat: add new user authentication"
-# Automatically bumps minor version
-```
-
-### Manual Versioning
-
-You can manually bump versions using npm scripts:
-
-```bash
-# Bump patch version (1.0.0 → 1.0.1)
-npm run version:patch
-
-# Bump minor version (1.0.0 → 1.1.0)
-npm run version:minor
-
-# Bump major version (1.0.0 → 2.0.0)
-npm run version:major
-
-# Auto-detect version type from commit message
-npm run version:auto
-```
-
-### Commit Message Conventions
-
-The system detects version type from commit messages:
-
-- **Major**: `breaking`, `major`
-- **Minor**: `feat`, `feature`, `minor`
-- **Patch**: Everything else (default)
-
-Examples:
-```bash
-git commit -m "feat: add car search functionality"  # Minor bump
-git commit -m "fix: resolve login bug"             # Patch bump
-git commit -m "breaking: change API endpoints"     # Major bump
-```
-
-## Scripts
-
 ### Root Level
-- `npm run version:patch` - Bump patch version
-- `npm run version:minor` - Bump minor version
-- `npm run version:major` - Bump major version
-- `npm run version:auto` - Auto-detect version type
-- `npm run setup:git-hooks` - Set up automatic versioning
+
+```bash
+npm run version:patch  # Bump patch version (1.0.0 -> 1.0.1)
+npm run version:minor  # Bump minor version (1.0.0 -> 1.1.0)
+npm run version:major  # Bump major version (1.0.0 -> 2.0.0)
+```
 
 ### Backend/Frontend
-- `npm run version:patch` - Bump patch version
-- `npm run version:minor` - Bump minor version
-- `npm run version:major` - Bump major version
-- `npm run version:auto` - Auto-detect version type
+
+```bash
+npm run version:patch  # Bump patch version
+npm run version:minor  # Bump minor version
+npm run version:major  # Bump major version
+```
+
+## Version Format
+
+All packages use semantic versioning (SemVer):
+- **Major**: Breaking changes
+- **Minor**: New features (backward compatible)
+- **Patch**: Bug fixes (backward compatible)
+
+## Automatic Versioning
+
+When you commit changes, the system automatically:
+
+1. **Detects changes** in frontend or backend
+2. **Increments appropriate version** (patch for most changes)
+3. **Updates both packages** to maintain sync
+4. **Creates git tags** for releases
+5. **Updates changelog** with version information
+
+## Manual Versioning
+
+For manual version control:
+
+```bash
+# Bump specific version type
+npm run version:patch  # 1.0.0 -> 1.0.1
+npm run version:minor  # 1.0.0 -> 1.1.0
+npm run version:major  # 1.0.0 -> 2.0.0
+
+# Force specific version
+npm version 1.2.3 --no-git-tag-version
+```
 
 ## Configuration
 
-### Disabling Automatic Versioning
+### Root Level
 
-To disable automatic versioning, remove the pre-commit hook:
+- `package.json` contains version scripts
+- `version-bump.js` handles automatic versioning logic
+- Git hooks trigger version updates
+
+### Backend/Frontend
+
+- Each package has its own `package.json`
+- Versions are synchronized automatically
+- Independent versioning is possible if needed
+
+## Best Practices
+
+1. **Use semantic commits** for automatic version detection
+2. **Test before versioning** to ensure stability
+3. **Review changelog** after version updates
+4. **Tag releases** for deployment tracking
+
+## Troubleshooting
+
+### Version Mismatch
+
+If frontend and backend versions get out of sync:
 
 ```bash
-rm .git/hooks/pre-commit
+# Reset to same version
+npm run version:reset
+
+# Or manually set versions
+cd backend && npm version 1.0.0 --no-git-tag-version
+cd ../frontend && npm version 1.0.0 --no-git-tag-version
 ```
 
-### Customizing Version Logic
+### Git Tag Issues
 
-Edit `scripts/version.js` to customize:
-- Version increment logic
-- Commit message parsing
-- Package.json file paths
+If git tags aren't created:
 
-## Files
+```bash
+# Check git configuration
+git config --get user.name
+git config --get user.email
 
-- `scripts/version.js` - Main versioning logic
-- `scripts/pre-commit.js` - Git pre-commit hook
-- `scripts/setup-git-hooks.js` - Hook setup script
-- `package.json` - Root package with scripts
-- `backend/package.json` - Backend package
-- `frontend/package.json` - Frontend package
+# Create tag manually
+git tag v1.0.0
+git push origin v1.0.0
+```
 
-## Current Versions
+## Integration with CI/CD
 
-- **Backend**: 1.0.0
-- **Frontend**: 0.0.0
-- **Root**: 1.0.0
+The versioning system integrates with GitHub Actions:
 
-## Notes
+- **Automatic versioning** on main branch commits
+- **Version tags** trigger deployments
+- **Changelog generation** for releases
+- **Docker image tagging** with versions
 
-- Versions are synchronized between frontend and backend
-- The system only bumps versions when source files are modified
-- Version bumps are automatically staged in Git
-- All version changes are logged to console
+## Version History
+
+### Recent Versions
+
+- **v2.3.0**: Production deployment feature
+- **v2.2.0**: Enhanced test coverage
+- **v2.1.0**: Rate limiting improvements
+- **v2.0.0**: Major refactoring and features
+
+### Version Increment Logic
+
+- **Patch**: Bug fixes, documentation updates
+- **Minor**: New features, improvements
+- **Major**: Breaking changes, major refactoring

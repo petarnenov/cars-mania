@@ -7,16 +7,19 @@
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 
-A modern browser-based marketplace for buying and selling cars with role-based access control, admin moderation, and real-time messaging.
+A modern browser-based marketplace for buying and selling cars with role-based access 
+control, admin moderation, and real-time messaging.
 
 ## ✨ Features
 
 ### 🔐 **Authentication & Authorization**
+
 - User registration/login with JWT tokens
 - Role-based access: **Guest**, **User**, **Admin**
 - Protected routes and API endpoints
 
-### 🚗 **Car Management** 
+### 🚗 **Car Management**
+
 - Users can create car listings (drafts)
 - Upload up to 3 images per car
 - Admin verification workflow before public listing
@@ -24,11 +27,13 @@ A modern browser-based marketplace for buying and selling cars with role-based a
 - Price range slider and search functionality
 
 ### 💬 **Messaging System**
+
 - Direct messaging between buyers and sellers
 - Conversation management with unread indicators
 - Message history and read receipts
 
 ### 🛡️ **Admin Panel**
+
 - Moderation queue for pending car advertisements
 - Approve/reject listings with optional reasons
 - User role management
@@ -48,6 +53,7 @@ A modern browser-based marketplace for buying and selling cars with role-based a
 ## 🚀 Quick Start
 
 ### Option 1: Docker (Recommended)
+
 ```bash
 # Clone and start with Docker
 git clone https://github.com/petarnenov/cars-mania.git
@@ -59,13 +65,14 @@ open http://localhost:5173
 ```
 
 ### Option 2: Local Development
+
 ```bash
 # Backend (Terminal 1)
 cd backend
 npm install
 npm run dev
 
-# Frontend (Terminal 2) 
+# Frontend (Terminal 2)
 cd frontend
 npm install
 npm run dev
@@ -77,18 +84,21 @@ open http://localhost:5173
 ## 🎭 Demo Credentials
 
 ### Seed Demo Data
+
 ```bash
 cd backend
 npm run seed
 ```
 
 This creates:
+
 - **Admin User**: `admin@demo.com` / `123456`
-- **Regular User**: `user@demo.com` / `123456`  
+- **Regular User**: `user@demo.com` / `123456`
 - **Sample Cars**: Mix of draft, pending, and verified listings
 - **Conversations**: Pre-populated message threads
 
 ### Manual Admin Promotion
+
 ```bash
 cd backend
 npm run make:admin -- user@example.com
@@ -105,17 +115,19 @@ npm run make:admin -- user@example.com
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 # Frontend tests (Vue components, router)
 cd frontend
 npm run test:cov
 
 # Backend tests (API endpoints, auth)
-cd backend  
+cd backend
 npm run test:cov
 ```
 
 ### E2E Tests
+
 ```bash
 cd frontend
 npm run e2e          # Headless
@@ -131,7 +143,7 @@ npm run e2e:report   # View results
 cars-mania/
 ├── frontend/                 # Vue 3 + TypeScript SPA
 │   ├── src/
-│   │   ├── views/           # Page components  
+│   │   ├── views/           # Page components
 │   │   ├── components/      # Reusable components
 │   │   ├── api.ts          # HTTP client
 │   │   ├── auth.ts         # Auth state management
@@ -153,6 +165,7 @@ cars-mania/
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```bash
 # Backend (.env)
 JWT_ACCESS_SECRET=your-access-secret
@@ -165,6 +178,7 @@ BACKEND_URL=http://backend:3001
 ```
 
 ### Database Schema
+
 ```bash
 cd backend
 npx prisma studio    # GUI browser
@@ -174,6 +188,7 @@ npx prisma db push   # Apply schema changes
 ## 📦 Deployment
 
 ### Container Registry
+
 Images are automatically built and pushed to [GitHub Container Registry](https://github.com/petarnenov/cars-mania/pkgs/container/cars-mania%2Fbackend) with multiple tags:
 
 ```bash
@@ -189,11 +204,13 @@ docker pull ghcr.io/petarnenov/cars-mania/backend:main-abc1234
 docker pull ghcr.io/petarnenov/cars-mania/frontend:pr-42
 ```
 
-**Retention**: Old images are automatically cleaned up, keeping the latest 10 versions per component.
+**Retention**: Old images are automatically cleaned up, keeping the latest 10 
+versions per component.
 
 ### Production Considerations
+
 - Switch to PostgreSQL for production database
-- Use cloud storage (AWS S3, Cloudinary) for images  
+- Use cloud storage (AWS S3, Cloudinary) for images
 - Set up proper secrets management
 - Configure CORS allowlist for your domain
 - Add rate limiting and security headers

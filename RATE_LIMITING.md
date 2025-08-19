@@ -1,10 +1,12 @@
 # Rate Limiting Implementation
 
-This document describes the rate limiting implementation for the Cars Mania application, which protects against abuse and improves security.
+This document describes the rate limiting implementation for the Cars Mania
+application, which protects against abuse and improves security.
 
 ## Overview
 
 Rate limiting has been implemented on both the backend and frontend to prevent:
+
 - Brute force attacks on authentication endpoints
 - API abuse and spam
 - Resource exhaustion
@@ -14,7 +16,8 @@ Rate limiting has been implemented on both the backend and frontend to prevent:
 
 ### Configuration
 
-Rate limiting is configured in `backend/src/middleware/rateLimit.ts` with different limits for different endpoints:
+Rate limiting is configured in `backend/src/middleware/rateLimit.ts` with different
+limits for different endpoints:
 
 - **General API**: 100 requests per 15 minutes
 - **Authentication**: 5 requests per 15 minutes (strict)
@@ -26,14 +29,17 @@ Rate limiting is configured in `backend/src/middleware/rateLimit.ts` with differ
 
 ### Implementation Details
 
-1. **Environment-Based Configuration**: Rate limiting is disabled in test environment to avoid interfering with tests
-2. **Custom Error Messages**: Each endpoint has specific error messages with retry information
+1. **Environment-Based Configuration**: Rate limiting is disabled in test
+   environment to avoid interfering with tests
+2. **Custom Error Messages**: Each endpoint has specific error messages with
+   retry information
 3. **Standard Headers**: Rate limit information is included in response headers
 4. **Custom Handlers**: Custom error handlers provide consistent error responses
 
 ### Usage
 
-Rate limiting is automatically applied to all API endpoints based on the configuration in `backend/src/app.ts`:
+Rate limiting is automatically applied to all API endpoints based on the
+configuration in `backend/src/app.ts`:
 
 ```typescript
 // Routes with specific rate limiting (disabled in test environment)
@@ -52,9 +58,10 @@ if (process.env.NODE_ENV !== 'test') {
 
 ## Frontend Rate Limiting
 
-### Configuration
+### Frontend Configuration
 
-Frontend rate limiting is implemented in `frontend/src/utils/rateLimit.ts` with client-side tracking:
+Frontend rate limiting is implemented in `frontend/src/utils/rateLimit.ts` with
+client-side tracking:
 
 - **API Rate Limiter**: 100 requests per 15 minutes
 - **Auth Rate Limiter**: 5 requests per 15 minutes
@@ -62,16 +69,17 @@ Frontend rate limiting is implemented in `frontend/src/utils/rateLimit.ts` with 
 - **Messaging Rate Limiter**: 20 requests per 5 minutes
 - **Car Creation Rate Limiter**: 5 requests per hour
 
-### Implementation Details
+### Frontend Implementation Details
 
 1. **Client-Side Tracking**: Uses in-memory storage to track requests
 2. **Automatic Cleanup**: Old requests are automatically removed from tracking
 3. **Blocking Logic**: Requests are blocked when limits are exceeded
 4. **Reset Functionality**: Limits reset after the configured time window
 
-### Usage
+### Frontend Usage
 
-The frontend API utility (`frontend/src/api.ts`) automatically checks rate limits before making requests:
+The frontend API utility (`frontend/src/api.ts`) automatically checks rate limits
+before making requests:
 
 ```typescript
 export async function api(path: string, init: RequestInit = {}) {
@@ -97,6 +105,7 @@ When rate limits are exceeded, the application returns:
 - **Headers**: Rate limit information (limit, remaining, reset time)
 
 Example response:
+
 ```json
 {
   "error": "Too many authentication attempts, please try again later.",
@@ -109,6 +118,7 @@ Example response:
 ### Backend Tests
 
 Rate limiting tests are in `backend/tests/rateLimit.spec.ts` and verify:
+
 - Rate limiter creation and configuration
 - Environment-based behavior
 - Different limiter instances
@@ -117,6 +127,7 @@ Rate limiting tests are in `backend/tests/rateLimit.spec.ts` and verify:
 ### Frontend Tests
 
 Rate limiting tests are in `frontend/src/__tests__/rateLimit.spec.ts` and verify:
+
 - Request tracking and limiting
 - Time window expiration
 - Multiple identifier support
@@ -131,6 +142,7 @@ Rate limiting tests are in `frontend/src/__tests__/rateLimit.spec.ts` and verify
 ### Customization
 
 To modify rate limits, update the configuration in:
+
 - Backend: `backend/src/middleware/rateLimit.ts`
 - Frontend: `frontend/src/utils/rateLimit.ts`
 
@@ -138,8 +150,10 @@ To modify rate limits, update the configuration in:
 
 To add rate limiting to new endpoints:
 
-1. **Backend**: Add the appropriate rate limiter to the route in `backend/src/app.ts`
-2. **Frontend**: Add the endpoint to the `getEndpointFromPath` function in `frontend/src/api.ts`
+1. **Backend**: Add the appropriate rate limiter to the route in
+   `backend/src/app.ts`
+2. **Frontend**: Add the endpoint to the `getEndpointFromPath` function in
+   `frontend/src/api.ts`
 
 ## Security Benefits
 
@@ -151,6 +165,7 @@ To add rate limiting to new endpoints:
 ## Monitoring
 
 Rate limiting provides headers for monitoring:
+
 - `ratelimit-limit`: Maximum requests allowed
 - `ratelimit-remaining`: Remaining requests in current window
 - `ratelimit-reset`: Time when the limit resets
@@ -165,6 +180,7 @@ Rate limiting provides headers for monitoring:
 ## Future Enhancements
 
 Potential improvements:
+
 1. **Redis Storage**: Use Redis for distributed rate limiting
 2. **User-Based Limits**: Different limits for different user types
 3. **Dynamic Limits**: Adjust limits based on user behavior

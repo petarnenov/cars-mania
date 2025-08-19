@@ -5,6 +5,7 @@ This guide covers setting up and deploying Cars Mania to production with automat
 ## Overview
 
 The production deployment system includes:
+
 - **Auto-updating containers** that deploy when CI passes
 - **Health checks** to ensure services are running properly
 - **Rollback capability** in case of deployment issues
@@ -13,6 +14,7 @@ The production deployment system includes:
 ## Prerequisites
 
 ### Server Requirements
+
 - Ubuntu 20.04+ or similar Linux distribution
 - Docker and Docker Compose installed
 - At least 2GB RAM
@@ -20,9 +22,10 @@ The production deployment system includes:
 - SSH access with key-based authentication
 
 ### GitHub Secrets Required
+
 Set these secrets in your GitHub repository settings:
 
-```
+```bash
 PROD_HOST=your-server-ip-or-domain
 PROD_USER=your-ssh-username
 PROD_SSH_KEY=your-private-ssh-key
@@ -60,6 +63,7 @@ nano .env.production
 ```
 
 **Required environment variables:**
+
 - `JWT_ACCESS_SECRET`: Generate a strong random string
 - `JWT_REFRESH_SECRET`: Generate a strong random string
 - `DATABASE_URL`: SQLite file path for production
@@ -87,6 +91,7 @@ chmod +x scripts/deploy.sh
 ### Deployment Workflow
 
 The `.github/workflows/deploy.yml` workflow:
+
 - Triggers on successful CI completion
 - Builds and pushes Docker images
 - Connects to production server via SSH
@@ -144,6 +149,7 @@ docker-compose -f docker-compose.prod.yml pull
 ### Health Checks
 
 The system includes built-in health checks:
+
 - Backend: `http://localhost:3001/api/health`
 - Frontend: `http://localhost:80`
 
@@ -176,6 +182,7 @@ tar -czf /opt/cars-mania/backups/$(date +%Y%m%d_%H%M%S)_uploads.tar.gz /opt/cars
 ### Common Issues
 
 1. **Services won't start**
+
    ```bash
    # Check logs
    ./scripts/deploy.sh logs
@@ -185,6 +192,7 @@ tar -czf /opt/cars-mania/backups/$(date +%Y%m%d_%H%M%S)_uploads.tar.gz /opt/cars
    ```
 
 2. **Health check fails**
+
    ```bash
    # Check service status
    ./scripts/deploy.sh status
@@ -194,6 +202,7 @@ tar -czf /opt/cars-mania/backups/$(date +%Y%m%d_%H%M%S)_uploads.tar.gz /opt/cars
    ```
 
 3. **Images not updating**
+
    ```bash
    # Force pull latest images
    docker-compose -f docker-compose.prod.yml pull --no-cache
@@ -232,6 +241,7 @@ To enable HTTPS:
 
 1. **Obtain SSL certificates** (Let's Encrypt recommended)
 2. **Configure nginx**:
+
    ```bash
    # Create nginx config
    mkdir -p /opt/cars-mania/nginx
@@ -239,6 +249,7 @@ To enable HTTPS:
    ```
 
 3. **Start with SSL profile**:
+
    ```bash
    docker-compose -f docker-compose.prod.yml --profile ssl up -d
    ```
@@ -253,6 +264,7 @@ To enable HTTPS:
 ## Support
 
 For deployment issues:
+
 1. Check the logs: `./scripts/deploy.sh logs`
 2. Verify environment: `cat .env.production`
 3. Check service status: `./scripts/deploy.sh status`
