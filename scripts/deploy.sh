@@ -97,7 +97,7 @@ start_services() {
     
     # Start services
     log_info "Starting containers..."
-    docker-compose -f "$COMPOSE_FILE" up -d
+    docker-compose -f "$COMPOSE_FILE" --env-file .env.production up -d
     
     # Wait for services to be ready
     log_info "Waiting for services to be ready..."
@@ -114,7 +114,7 @@ stop_services() {
     log_info "Stopping services..."
     
     cd "$PROJECT_DIR"
-    docker-compose -f "$COMPOSE_FILE" down
+    docker-compose -f "$COMPOSE_FILE" --env-file .env.production down
     
     log_success "Services stopped successfully"
 }
@@ -140,7 +140,7 @@ update_services() {
     
     # Restart with new images
     log_info "Restarting with new images..."
-    docker-compose -f "$COMPOSE_FILE" up -d
+    docker-compose -f "$COMPOSE_FILE" --env-file .env.production up -d
     
     # Wait for services to be ready
     log_info "Waiting for services to be ready..."
@@ -161,18 +161,18 @@ show_status() {
     log_info "Service status:"
     
     cd "$PROJECT_DIR"
-    docker-compose -f "$COMPOSE_FILE" ps
+    docker-compose -f "$COMPOSE_FILE" --env-file .env.production ps
     
     echo ""
     log_info "Recent logs:"
-    docker-compose -f "$COMPOSE_FILE" logs --tail=20
+    docker-compose -f "$COMPOSE_FILE" --env-file .env.production logs --tail=20
 }
 
 show_logs() {
     log_info "Showing logs..."
     
     cd "$PROJECT_DIR"
-    docker-compose -f "$COMPOSE_FILE" logs -f
+    docker-compose -f "$COMPOSE_FILE" --env-file .env.production logs -f
 }
 
 health_check() {
