@@ -44,16 +44,25 @@ if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'e2e') {
   app.use(monitoringMiddleware(prisma));
 }
 
-// Routes with specific rate limiting (temporarily disabled for testing)
-// TODO: Re-enable rate limiting after fixing E2E test configuration
-console.log(`Running in ${process.env.NODE_ENV} mode - rate limiting temporarily disabled for testing`)
-app.use('/api/auth', authRouter);
-app.use('/api/cars', carsRouter);
-app.use('/api/upload', uploadsRouter);
-app.use('/api', messagingRouter);
-app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
-app.use('/api', metricsRouter);
-app.use('/api/monitoring', monitoringRouter);
+// Routes with specific rate limiting
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'e2e') {
+  app.use('/api/auth', authLimiter, authRouter);
+  app.use('/api/cars', carCreationLimiter, carsRouter);
+  app.use('/api/upload', uploadLimiter, uploadsRouter);
+  app.use('/api', messagingLimiter, messagingRouter);
+  app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
+  app.use('/api', metricsRouter);
+  app.use('/api/monitoring', monitoringRouter);
+} else {
+  // No rate limiting for test environments
+  app.use('/api/auth', authRouter);
+  app.use('/api/cars', carsRouter);
+  app.use('/api/upload', uploadsRouter);
+  app.use('/api', messagingRouter);
+  app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
+  app.use('/api', metricsRouter);
+  app.use('/api/monitoring', monitoringRouter);
+}
 
 // test-only helper routes (used by e2e environment)
 if (process.env.NODE_ENV !== 'production') {
