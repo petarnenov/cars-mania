@@ -449,54 +449,151 @@ h2 {
 
 .health-section,
 .metrics-section {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  background: #f8f9fa;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.health-section h2,
+.metrics-section h2 {
+  color: #212529;
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .health-grid,
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
 }
 
 .health-card,
 .metric-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   text-align: center;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
+
+.health-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.health-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.health-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.health-card:nth-child(1) { animation-delay: 0.1s; }
+.health-card:nth-child(2) { animation-delay: 0.2s; }
+.health-card:nth-child(3) { animation-delay: 0.3s; }
+.health-card:nth-child(4) { animation-delay: 0.4s; }
+.health-card:nth-child(5) { animation-delay: 0.5s; }
 
 .health-card.healthy {
   border-left: 4px solid #4caf50;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+}
+
+.health-card.healthy::before {
+  background: linear-gradient(90deg, #4caf50 0%, #66bb6a 100%);
 }
 
 .health-card.degraded {
   border-left: 4px solid #ff9800;
+  background: linear-gradient(135deg, #ffffff 0%, #fff8e1 100%);
+}
+
+.health-card.degraded::before {
+  background: linear-gradient(90deg, #ff9800 0%, #ffb74d 100%);
 }
 
 .health-card.unhealthy {
   border-left: 4px solid #f44336;
+  background: linear-gradient(135deg, #ffffff 0%, #ffebee 100%);
+}
+
+.health-card.unhealthy::before {
+  background: linear-gradient(90deg, #f44336 0%, #ef5350 100%);
+}
+
+.health-card.unknown {
+  border-left: 4px solid #9e9e9e;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+}
+
+.health-card.unknown::before {
+  background: linear-gradient(90deg, #9e9e9e 0%, #bdbdbd 100%);
 }
 
 .status-indicator {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin: 10px 0;
+  font-size: 1.4em;
+  font-weight: 700;
+  margin: 15px 0;
   text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  position: relative;
 }
 
 .health-card.healthy .status-indicator {
-  color: #4caf50;
+  color: #2e7d32;
+  background: rgba(76, 175, 80, 0.1);
+  border: 2px solid rgba(76, 175, 80, 0.2);
 }
 
 .health-card.degraded .status-indicator {
-  color: #ff9800;
+  color: #ef6c00;
+  background: rgba(255, 152, 0, 0.1);
+  border: 2px solid rgba(255, 152, 0, 0.2);
 }
 
 .health-card.unhealthy .status-indicator {
-  color: #f44336;
+  color: #c62828;
+  background: rgba(244, 67, 54, 0.1);
+  border: 2px solid rgba(244, 67, 54, 0.2);
+}
+
+.health-card.unknown .status-indicator {
+  color: #616161;
+  background: rgba(158, 158, 158, 0.1);
+  border: 2px solid rgba(158, 158, 158, 0.2);
 }
 
 .metric-value {
@@ -518,15 +615,36 @@ h2 {
   color: #4caf50;
 }
 
+.health-card h3 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.health-card p {
+  margin: 8px 0;
+  color: #6c757d;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
 .metric-card h3 {
-  color: #666;
-  margin-bottom: 10px;
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .metric-card p {
-  margin: 5px 0;
-  color: #777;
-  font-size: 0.9em;
+  margin: 8px 0;
+  color: #6c757d;
+  font-size: 0.95em;
+  font-weight: 500;
 }
 
 .refresh-section {
