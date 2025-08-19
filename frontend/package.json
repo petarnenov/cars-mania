@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,11 @@
     "lint:fix": "eslint --ext .ts,.vue src --fix",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "e2e:report": "playwright show-report"
+    "e2e:report": "playwright show-report",
+    "version:patch": "node ../scripts/version.js patch",
+    "version:minor": "node ../scripts/version.js minor",
+    "version:major": "node ../scripts/version.js major",
+    "version:auto": "node ../scripts/version.js"
   },
   "dependencies": {
     "vue": "^3.5.18",

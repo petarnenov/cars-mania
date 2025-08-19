@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "index.js",
   "scripts": {
     "test": "vitest -c vitest.config.mjs",
@@ -12,7 +12,11 @@
     "make:admin": "tsx scripts/makeAdmin.ts",
     "seed": "tsx scripts/seed.ts",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "version:patch": "node ../scripts/version.js patch",
+    "version:minor": "node ../scripts/version.js minor",
+    "version:major": "node ../scripts/version.js major",
+    "version:auto": "node ../scripts/version.js"
   },
   "keywords": [],
   "author": "",
