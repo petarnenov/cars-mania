@@ -1,0 +1,45 @@
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    wait_for_ci: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  status:
+    project:
+      default:
+        target: 65%
+        threshold: 5%
+    patch:
+      default:
+        target: 65%
+        threshold: 10%
+
+flags:
+  backend:
+    paths:
+      - backend/src/
+    carryforward: false
+  frontend:
+    paths:
+      - frontend/src/
+    carryforward: false
+
+ignore:
+  - "backend/dist/"
+  - "backend/node_modules/"
+  - "backend/prisma/migrations/"
+  - "backend/scripts/"
+  - "frontend/dist/"
+  - "frontend/node_modules/"
+  - "frontend/tests-e2e/"
+  - "**/*.d.ts"
+  - "**/*.config.*"
+  - "**/vitest.setup.ts"
+
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false

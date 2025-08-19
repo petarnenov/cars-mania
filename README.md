@@ -1,6 +1,7 @@
 # Cars Mania 🚗
 
 [![CI](https://github.com/petarnenov/cars-mania/actions/workflows/ci.yml/badge.svg)](https://github.com/petarnenov/cars-mania/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/petarnenov/cars-mania/graph/badge.svg?token=YOUR_CODECOV_TOKEN)](https://codecov.io/gh/petarnenov/cars-mania)
 [![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -173,12 +174,22 @@ npx prisma db push   # Apply schema changes
 ## 📦 Deployment
 
 ### Container Registry
-Images are automatically built and pushed to [GitHub Container Registry](https://github.com/petarnenov/cars-mania/pkgs/container/cars-mania%2Fbackend):
+Images are automatically built and pushed to [GitHub Container Registry](https://github.com/petarnenov/cars-mania/pkgs/container/cars-mania%2Fbackend) with multiple tags:
 
 ```bash
+# Latest stable (main branch)
 docker pull ghcr.io/petarnenov/cars-mania/frontend:latest
 docker pull ghcr.io/petarnenov/cars-mania/backend:latest
+
+# Specific commit (SHA-based)
+docker pull ghcr.io/petarnenov/cars-mania/frontend:main-abc1234
+docker pull ghcr.io/petarnenov/cars-mania/backend:main-abc1234
+
+# Pull request builds
+docker pull ghcr.io/petarnenov/cars-mania/frontend:pr-42
 ```
+
+**Retention**: Old images are automatically cleaned up, keeping the latest 10 versions per component.
 
 ### Production Considerations
 - Switch to PostgreSQL for production database
