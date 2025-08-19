@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 // Use FE proxy `/api` everywhere to avoid cross-host cookie/domain issues
 
 test.describe('Admin moderation', () => {
-  test('admin can verify submitted draft and ad becomes public', async ({ page, request }) => {
+  test('admin can verify submitted draft and ad becomes public', async ({ request }) => {
     // Seller registers and creates a draft, then submits for review
     const sellerEmail = `seller_${Date.now()}@test.dev`
     let reg = await request.post('/api/auth/register', { data: { email: sellerEmail, password: '123456', name: 'Seller' } })

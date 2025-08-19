@@ -16,7 +16,7 @@ test.describe('Auth & guards', () => {
 		await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible()
 	})
 
-	test('admin cannot access new car and is redirected to admin queue', async ({ page, context }) => {
+	test('admin cannot access new car and is redirected to admin queue', async ({ page }) => {
 		const email = `admin_${Date.now()}@test.dev`
 		// Register admin via UI then promote via backend CLI triggered through a page request to keep sequence
 		await page.goto('/register')
@@ -25,7 +25,7 @@ test.describe('Auth & guards', () => {
 		await page.locator('form input[type="password"]').fill('123456')
 		await page.getByRole('button', { name: /create account/i }).click()
 		// Wait until FE router has pushed /cars/new and the heading is visible
-		await page.waitForFunction(() => location.pathname.endsWith('/cars/new'))
+		await page.waitForURL('**/cars/new')
 		await expect(page.getByRole('heading', { name: 'New Car' })).toBeVisible()
 		// Promote to admin by hitting a backend script through the test runner shell is not possible here; instead navigate to login page and re-login after promotion done in a parallel step is out of scope.
 		// Workaround: navigate directly to admin route to assert guard behavior after we manually set role cookies via API is not available; skip this specific check if role not admin.

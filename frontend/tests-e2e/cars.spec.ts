@@ -8,7 +8,7 @@ test.describe('Cars flow', () => {
 		await page.locator('form input[type="email"]').fill(email)
 		await page.locator('form input[type="password"]').fill('123456')
 		await page.getByRole('button', { name: /create account/i }).click()
-		await page.waitForFunction(() => location.pathname.endsWith('/cars/new'))
+		await page.waitForURL('**/cars/new')
 		await expect(page.getByRole('heading', { name: 'New Car' })).toBeVisible()
 
 		const form = page.locator('form')
@@ -31,7 +31,7 @@ test.describe('Cars flow', () => {
 		await page.locator('form input[type="email"]').fill(email)
 		await page.locator('form input[type="password"]').fill('123456')
 		await page.getByRole('button', { name: /create account/i }).click()
-		await page.waitForFunction(() => location.pathname.endsWith('/cars/new'))
+		await page.waitForURL('**/cars/new')
 		await expect(page.getByRole('heading', { name: 'New Car' })).toBeVisible()
 
 		const form = page.locator('form')
