@@ -1,5 +1,5 @@
 # ===== Builder =====
-FROM node:20-alpine AS builder
+FROM node:20-alpine3.20 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -14,9 +14,10 @@ RUN npm run build
 RUN mkdir -p dist/generated && cp -r src/generated/prisma dist/generated/prisma
 
 # ===== Runner =====
-FROM node:20-alpine AS runner
+FROM node:20-alpine3.20 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apk --no-cache upgrade
 # Copy production node_modules
 COPY --from=builder /app/node_modules ./node_modules
 # Copy built app and prisma assets

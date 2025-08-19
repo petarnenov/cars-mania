@@ -128,6 +128,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./backend
+          pull: true
           push: true
           tags: ghcr.io/${{ github.repository }}/backend:latest
 
@@ -135,6 +136,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
+          pull: true
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:latest
 
