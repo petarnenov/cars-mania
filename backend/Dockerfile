@@ -26,4 +26,5 @@ COPY package*.json ./
 # Create data and uploads directories (mounted in docker-compose)
 RUN mkdir -p /data /app/uploads
 EXPOSE 3001
+HEALTHCHECK --interval=5s --timeout=3s --retries=12 CMD wget -qO- http://127.0.0.1:3001/health || exit 1
 CMD ["node", "dist/index.js"]
