@@ -14,18 +14,18 @@ app.use(cors());
 app.use(express.json());
 app.use(useCookies());
 
-app.use('/auth', authRouter);
-app.use('/cars', carsRouter);
-app.use('/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
-app.use('/upload', uploadsRouter);
-app.use('/', messagingRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/cars', carsRouter);
+app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
+app.use('/api/upload', uploadsRouter);
+app.use('/api', messagingRouter);
 
 // test-only helper routes (used by e2e environment)
 if (process.env.NODE_ENV !== 'production') {
   app.use('/test', testRouter);
 }
 
-app.get('/health', (_req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 

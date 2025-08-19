@@ -141,18 +141,27 @@ jobs:
           tags: ghcr.io/${{ github.repository }}/frontend:latest
 
       - name: Docker Compose up (smoke and e2e)
+        env:
+          BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend:latest
+          FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend:latest
+          JWT_ACCESS_SECRET: test_access_secret
+          JWT_REFRESH_SECRET: test_refresh_secret
         run: |
-          export BACKEND_IMAGE=ghcr.io/${{ github.repository }}/backend:latest
-          export FRONTEND_IMAGE=ghcr.io/${{ github.repository }}/frontend:latest
           docker compose -f docker-compose.ci.yml up -d
-          # wait for services
+          # wait for services (increased timeout for DB init)
           up=0
-          for i in {1..90}; do
-            if curl -fsS http://127.0.0.1:3001/health >/dev/null; then echo backend up; up=1; break; fi; sleep 1; done
+          for i in {1..120}; do
+            if curl -fsS http://127.0.0.1:3001/api/health >/dev/null; then echo "backend up"; up=1; break; fi
+            echo "Waiting for backend... ($i/120)"
+            sleep 2
+          done
           if [ "$up" != "1" ]; then echo "backend did not become ready"; docker compose -f docker-compose.ci.yml logs backend || true; exit 1; fi
           fe=0
-          for i in {1..90}; do
-            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then echo frontend up; fe=1; break; fi; sleep 1; done
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then echo "frontend up"; fe=1; break; fi
+            echo "Waiting for frontend... ($i/60)"
+            sleep 1
+          done
           if [ "$fe" != "1" ]; then echo "frontend did not become ready"; docker compose -f docker-compose.ci.yml logs frontend || true; exit 1; fi
           # run playwright against dockerized site
           cd frontend
@@ -160,10 +169,5 @@ jobs:
           npx playwright install --with-deps
           E2E_DOCKER=1 E2E_BASE_URL=http://localhost:5173 BACKEND_URL=http://127.0.0.1:3001 npm run e2e
           cd ..
-          docker compose logs backend | tail -n 200 || true
-          docker compose logs frontend | tail -n 200 || true
-        env:
-          JWT_ACCESS_SECRET: test_access_secret
-          JWT_REFRESH_SECRET: test_refresh_secret
-          BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend:latest
-          FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend:latest
+          docker compose -f docker-compose.ci.yml logs backend | tail -n 200 || true
+          docker compose -f docker-compose.ci.yml logs frontend | tail -n 200 || true

@@ -19,7 +19,7 @@ export default defineConfig({
 		: {
 			command: 'npm run dev',
 			url: 'http://localhost:5173',
-			env: { BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:3301' },
+			env: { BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:3001' },
 			reuseExistingServer: true,
 			timeout: 60_000,
 		},

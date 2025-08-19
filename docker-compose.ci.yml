@@ -14,8 +14,7 @@ services:
       - uploads:/app/uploads
     ports:
       - "3001:3001"
-      - "3301:3001"
-    command: ["node", "dist/index.js"]
+  # Use default CMD from Dockerfile (with DB init)
   frontend:
     image: ${FRONTEND_IMAGE}
     container_name: cars-frontend
