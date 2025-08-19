@@ -26,7 +26,7 @@ export default defineConfig({
 	projects: [
 		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
 	],
-	workers: 1, // Reduce workers to avoid race conditions
+	workers: 2, // Run with 2 workers for faster test execution
 })
 
 
