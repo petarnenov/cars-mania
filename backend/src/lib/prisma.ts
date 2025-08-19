@@ -1,8 +1,9 @@
 import { PrismaClient } from '../generated/prisma';
 
 // Prevent multiple instances in dev with nodemon
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalForPrisma = globalThis as any;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
 export const prisma: PrismaClient =
   globalForPrisma.prisma || new PrismaClient({ log: ['error', 'warn'] });

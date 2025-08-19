@@ -6,7 +6,11 @@ describe('health', () => {
   it('GET /health -> ok', async () => {
     const res = await request(app).get('/api/health');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ ok: true });
+    expect(res.body).toMatchObject({ ok: true });
+    expect(res.body).toHaveProperty('timestamp');
+    expect(res.body).toHaveProperty('uptime');
+    expect(res.body).toHaveProperty('memory');
+    expect(res.body).toHaveProperty('version');
   });
 });
 

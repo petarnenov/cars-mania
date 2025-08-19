@@ -29,5 +29,7 @@ COPY package*.json ./
 RUN mkdir -p /data /app/uploads && chmod +x ./scripts/init-db.sh
 EXPOSE 3001
 HEALTHCHECK --interval=5s --timeout=3s --retries=12 CMD wget -qO- http://127.0.0.1:3001/api/health || exit 1
-# Initialize database and start server
-CMD ["sh", "-c", "./scripts/init-db.sh && node dist/index.js"]
+# Initialize database and start server with proper signal handling
+CMD ["sh", "-c", "./scripts/init-db.sh && exec node dist/index.js"]
+# Ensure proper signal handling in Docker
+STOPSIGNAL SIGTERM
