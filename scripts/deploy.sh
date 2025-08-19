@@ -6,9 +6,18 @@
 set -e
 
 # Configuration
-PROJECT_DIR="/opt/cars-mania"
+PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 COMPOSE_FILE="docker-compose.prod.yml"
 ENV_FILE=".env.production"
+
+# Set default compose command
+if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose &> /dev/null; then
+    COMPOSE_CMD="docker-compose"
+else
+    COMPOSE_CMD="docker compose"  # Default fallback
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -42,11 +51,13 @@ check_dependencies() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
-        log_error "Docker Compose is not installed"
+    # Verify compose command works
+    if ! $COMPOSE_CMD version &> /dev/null; then
+        log_error "Docker Compose is not working properly"
         exit 1
     fi
     
+    log_info "Using Docker Compose command: $COMPOSE_CMD"
     log_success "Dependencies check passed"
 }
 
@@ -91,13 +102,20 @@ start_services() {
     
     cd "$PROJECT_DIR"
     
-    # Pull latest images
-    log_info "Pulling latest images..."
-    docker-compose -f "$COMPOSE_FILE" pull
+    # Check if images exist locally, if not build them
+    if ! docker image inspect ghcr.io/petarnenov/cars-mania/backend:latest >/dev/null 2>&1; then
+        log_info "Building backend image..."
+        cd backend && docker build -t ghcr.io/petarnenov/cars-mania/backend:latest --platform linux/arm64 . && cd ..
+    fi
+    
+    if ! docker image inspect ghcr.io/petarnenov/cars-mania/frontend:latest >/dev/null 2>&1; then
+        log_info "Building frontend image..."
+        cd frontend && docker build -t ghcr.io/petarnenov/cars-mania/frontend:latest --platform linux/arm64 . && cd ..
+    fi
     
     # Start services
     log_info "Starting containers..."
-    docker-compose -f "$COMPOSE_FILE" --env-file .env.production up -d
+    $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env.production up -d
     
     # Wait for services to be ready
     log_info "Waiting for services to be ready..."
@@ -105,7 +123,7 @@ start_services() {
     
     # Check service health
     log_info "Checking service health..."
-    docker-compose -f "$COMPOSE_FILE" ps
+    $COMPOSE_CMD -f "$COMPOSE_FILE" ps
     
     log_success "Services started successfully"
 }
@@ -114,7 +132,7 @@ stop_services() {
     log_info "Stopping services..."
     
     cd "$PROJECT_DIR"
-    docker-compose -f "$COMPOSE_FILE" --env-file .env.production down
+    $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env.production down
     
     log_success "Services stopped successfully"
 }
@@ -134,13 +152,14 @@ update_services() {
     
     cd "$PROJECT_DIR"
     
-    # Pull latest images
-    log_info "Pulling latest images..."
-    docker-compose -f "$COMPOSE_FILE" pull
+    # Build latest images
+    log_info "Building latest images..."
+    cd backend && docker build -t ghcr.io/petarnenov/cars-mania/backend:latest --platform linux/arm64 . && cd ..
+    cd frontend && docker build -t ghcr.io/petarnenov/cars-mania/frontend:latest --platform linux/arm64 . && cd ..
     
     # Restart with new images
     log_info "Restarting with new images..."
-    docker-compose -f "$COMPOSE_FILE" --env-file .env.production up -d
+    $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env.production up -d
     
     # Wait for services to be ready
     log_info "Waiting for services to be ready..."
@@ -148,7 +167,7 @@ update_services() {
     
     # Check service health
     log_info "Checking service health..."
-    docker-compose -f "$COMPOSE_FILE" ps
+    $COMPOSE_CMD -f "$COMPOSE_FILE" ps
     
     # Clean up old images
     log_info "Cleaning up old images..."
@@ -161,18 +180,18 @@ show_status() {
     log_info "Service status:"
     
     cd "$PROJECT_DIR"
-    docker-compose -f "$COMPOSE_FILE" --env-file .env.production ps
+    $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env.production ps
     
     echo ""
     log_info "Recent logs:"
-    docker-compose -f "$COMPOSE_FILE" --env-file .env.production logs --tail=20
+    $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env.production logs --tail=20
 }
 
 show_logs() {
     log_info "Showing logs..."
     
     cd "$PROJECT_DIR"
-    docker-compose -f "$COMPOSE_FILE" --env-file .env.production logs -f
+    $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env.production logs -f
 }
 
 health_check() {

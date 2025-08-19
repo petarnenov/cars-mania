@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     image: ${BACKEND_IMAGE:-ghcr.io/petarnenov/cars-mania/backend:latest}
@@ -21,7 +19,7 @@ services:
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

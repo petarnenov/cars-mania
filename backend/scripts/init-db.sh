@@ -7,6 +7,6 @@ echo "Initializing database..."
 mkdir -p /data
 
 # Run Prisma push to create schema (idempotent)
-npx prisma db push --skip-generate
+npx prisma db push --schema=/app/dist/generated/prisma/schema.prisma --skip-generate
 
 echo "Database initialization complete"
