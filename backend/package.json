@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "vitest -c vitest.config.ts",
-    "test:run": "vitest run -c vitest.config.ts",
-    "test:cov": "vitest run -c vitest.config.ts --coverage",
+    "test": "vitest -c vitest.config.mjs",
+    "test:run": "vitest run -c vitest.config.mjs",
+    "test:cov": "vitest run -c vitest.config.mjs --coverage",
     "dev": "nodemon --watch src --ext ts,json --exec tsx src/index.ts",
     "build": "tsc -p .",
     "start": "node dist/index.js",
