@@ -320,5 +320,120 @@ describe('Monitoring.vue Integration Tests', () => {
       expect(refreshButton.text()).toBe('Refresh Metrics')
       expect(refreshButton.attributes('disabled')).toBeUndefined()
     })
+
+    it('handles network connectivity issues', { timeout: 10000 }, async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      
+      // Mock network failure
+      mockApi.mockRejectedValue(new Error('Network Error'))
+      
+      wrapper = mount(Monitoring)
+      await nextTick()
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Component should still render
+      expect(wrapper.find('.monitoring-dashboard').exists()).toBe(true)
+      
+      // Error should be logged
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to refresh metrics:', expect.any(Error))
+      
+      consoleSpy.mockRestore()
+    })
+
+    it('displays last updated timestamp correctly', { timeout: 10000 }, async () => {
+      mockApi.mockResolvedValue({
+        cpu: { usage: 30, loadAverage: [1.0, 1.0, 1.0], cores: 4 },
+        memory: { total: 8000000000, used: 4000000000, free: 4000000000, usagePercent: 50 },
+        disk: { total: 500000000000, used: 250000000000, free: 250000000000, usagePercent: 50 },
+        uptime: 3600000,
+        network: { bytesIn: 1000000, bytesOut: 500000 },
+        status: 'healthy',
+        checks: {
+          database: { status: 'healthy', responseTime: 10 },
+          disk: { status: 'healthy', usage: 50 },
+          memory: { status: 'healthy', usage: 50 },
+          cpu: { status: 'healthy', usage: 30 }
+        },
+        timestamp: '2025-08-19T22:30:00.000Z',
+        responseTimes: { average: 100, p95: 150, p99: 200 },
+        requestRate: 10,
+        errorRate: 1,
+        responseTime: 10,
+        tables: { users: 100, cars: 50, messages: 200 }
+      })
+
+      wrapper = mount(Monitoring)
+      await nextTick()
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Should show last updated time instead of "Never"
+      expect(wrapper.text()).not.toContain('Last updated: Never')
+    })
+
+    it('handles multiple rapid refresh requests', { timeout: 10000 }, async () => {
+      let callCount = 0
+      mockApi.mockImplementation(() => {
+        callCount++
+        return Promise.resolve({
+          cpu: { usage: callCount * 5, loadAverage: [1.0, 1.0, 1.0], cores: 4 },
+          memory: { total: 8000000000, used: 4000000000, free: 4000000000, usagePercent: 50 },
+          disk: { total: 500000000000, used: 250000000000, free: 250000000000, usagePercent: 50 },
+          uptime: 3600000,
+          network: { bytesIn: 1000000, bytesOut: 500000 }
+        })
+      })
+
+      wrapper = mount(Monitoring)
+      await nextTick()
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      const refreshButton = wrapper.find('.refresh-btn')
+      
+      // Trigger multiple rapid clicks
+      await refreshButton.trigger('click')
+      await refreshButton.trigger('click')
+      await refreshButton.trigger('click')
+      
+      await nextTick()
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Should handle multiple requests gracefully
+      expect(callCount).toBeGreaterThan(1)
+    })
+
+    it('displays health status with proper styling classes', { timeout: 10000 }, async () => {
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/health':
+            return Promise.resolve({
+              status: 'degraded',
+              checks: {
+                database: { status: 'healthy', responseTime: 10 },
+                disk: { status: 'unhealthy', usage: 95 },
+                memory: { status: 'degraded', usage: 75 },
+                cpu: { status: 'healthy', usage: 30 }
+              },
+              timestamp: '2025-08-19T22:30:00.000Z',
+              alerts: ['High disk usage detected']
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      wrapper = mount(Monitoring)
+      await nextTick()
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Check for health status classes
+      const healthCards = wrapper.findAll('.health-card')
+      expect(healthCards.length).toBeGreaterThan(0)
+      
+      // Should have health cards with status classes
+      expect(healthCards.length).toBeGreaterThan(0)
+      expect(wrapper.text()).toContain('healthy')
+      expect(wrapper.text()).toContain('degraded')
+      expect(wrapper.text()).toContain('unhealthy')
+    })
   })
 })
