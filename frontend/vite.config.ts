@@ -15,19 +15,29 @@ export default defineConfig({
 		},
 	},
 
-	test: {
-		environment: 'jsdom',
-		setupFiles: ['./vitest.setup.ts'],
-		coverage: {
-			reporter: ['text', 'html'],
-			provider: 'v8',
-			thresholds: {
-				statements: 65,
-				branches: 65,
-				functions: 65,
-				lines: 65,
+		test: {
+			environment: 'jsdom',
+			setupFiles: ['./vitest.setup.ts'],
+			coverage: {
+				reporter: ['text', 'html'],
+				provider: 'v8',
+				thresholds: {
+					statements: 65,
+					branches: 65,
+					functions: 65,
+					lines: 65,
+				},
+				exclude: [
+					'*.ts',
+					'**/*.ts',
+					'!src/**/*.ts',
+					'e2e/**',
+					'tests-e2e/**',
+					'node_modules/**',
+					'coverage/**',
+					'dist/**',
+				],
 			},
+			exclude: [...configDefaults.exclude, 'e2e/**', 'tests-e2e/**'],
 		},
-		exclude: [...configDefaults.exclude, 'e2e/**', 'tests-e2e/**'],
-	},
 })
