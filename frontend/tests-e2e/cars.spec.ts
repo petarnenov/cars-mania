@@ -40,11 +40,8 @@ test.describe('Cars flow', () => {
 		await form.locator('input[type="date"]').fill('2018-01-01')
 		await form.locator('input').nth(3).fill('Black')
 		await form.locator('textarea').fill('No price provided')
-		// Remove required attr to allow submit and exercise our client-side guard
-		await page.evaluate(() => {
-			const el = document.querySelector('input[type="number"]') as HTMLInputElement | null
-			el?.removeAttribute('required')
-		})
+		// Remove required attr to allow submit and exercise our client-side guard (avoid DOM types)
+		await page.locator('input[type="number"]').evaluate((el: any) => el.removeAttribute('required'))
 		await page.getByRole('button', { name: /create draft/i }).click()
 		await expect(page.locator('.container p.error')).toContainText(/Price is required/i)
 	})
