@@ -23,7 +23,7 @@ const isAdmin = computed(() => authState.user?.role === 'ADMIN')
 
 <template>
 	<nav style="display:flex; gap:1rem; padding:1rem; border-bottom:1px solid #eee;">
-		<router-link to="/">Catalog</router-link>
+		<router-link to="/">New Catalog</router-link>
 		<router-link v-if="!isAuthed" to="/login">Login</router-link>
 		<router-link v-if="!isAuthed" to="/register">Register</router-link>
 		<router-link v-if="isAuthed && !isAdmin" to="/cars/new">New Car</router-link>
