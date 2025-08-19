@@ -25,11 +25,19 @@ router.beforeEach(async (to) => {
 	}
 	if (meta.requiresAuth && !authState.user) return { path: '/login', query: { next: to.fullPath } }
 	if (meta.requiresAdmin && authState.user?.role !== 'ADMIN') {
-		return { path: authState.user ? '/cars/new' : '/login' }
+		const redirectPath = authState.user ? '/cars/new' : '/login'
+		// Only redirect if we're not already going to the correct path
+		if (to.path !== redirectPath) {
+			return { path: redirectPath }
+		}
 	}
 	if (meta.requiresRole && authState.user?.role !== meta.requiresRole) {
 		const role = (authState.user?.role ?? '') as string
-		return { path: role === 'ADMIN' ? '/admin/moderation' : '/cars/new' }
+		const redirectPath = role === 'ADMIN' ? '/admin/moderation' : '/cars/new'
+		// Only redirect if we're not already going to the correct path
+		if (to.path !== redirectPath) {
+			return { path: redirectPath }
+		}
 	}
 })
 
