@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 # Check if backend is available and generate nginx config
 BACKEND_URL=${BACKEND_URL:-http://backend:3001}
 echo "Using BACKEND_URL: $BACKEND_URL"
 
-# Extract host and port from BACKEND_URL
-if [[ "$BACKEND_URL" =~ ^http://([^:]+):([0-9]+) ]]; then
-    BACKEND_HOST="${BASH_REMATCH[1]}"
-    BACKEND_PORT="${BASH_REMATCH[2]}"
+# Extract host and port from BACKEND_URL using sed
+BACKEND_HOST=$(echo "$BACKEND_URL" | sed -n 's|^http://\([^:]*\):\([0-9]*\)|\1|p')
+BACKEND_PORT=$(echo "$BACKEND_URL" | sed -n 's|^http://\([^:]*\):\([0-9]*\)|\2|p')
+
+if [ -n "$BACKEND_HOST" ] && [ -n "$BACKEND_PORT" ]; then
     echo "Backend host: $BACKEND_HOST, port: $BACKEND_PORT"
     
     # Check if backend is available
