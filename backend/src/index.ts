@@ -22,7 +22,7 @@ app.use('/api/upload', uploadsRouter);
 app.use('/api', messagingRouter);
 // test-only helper routes (used by e2e environment)
 if (process.env.NODE_ENV !== 'production') {
-  app.use('/test', testRouter);
+  app.use('/api/test', testRouter);
 }
 
 app.get('/api/health', (_req, res) => {

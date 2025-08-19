@@ -11,7 +11,6 @@ export default defineConfig({
 			'/api': {
 				target: process.env.BACKEND_URL || 'http://localhost:3001',
 				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, ''),
 			},
 		},
 	},

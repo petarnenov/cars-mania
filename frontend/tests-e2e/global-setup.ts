@@ -31,8 +31,8 @@ export default async function globalSetup(_config: FullConfig) {
 	const child = spawn('npm', ['run', 'dev'], { cwd: backendDir, env, stdio: 'inherit' })
 	fs.writeFileSync(PID_FILE, String(child.pid))
 
-	// wait for /health to be reachable
-	const base = 'http://127.0.0.1:3301/health'
+	// wait for /api/health to be reachable
+	const base = 'http://127.0.0.1:3301/api/health'
 	const started = await waitFor(async () => {
 		try {
 			const res = await fetch(base)
