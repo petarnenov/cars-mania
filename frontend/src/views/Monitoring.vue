@@ -3,7 +3,7 @@
     <h1>System Monitoring Dashboard</h1>
     
     <!-- Alerts Section -->
-    <div class="alerts-section" v-if="alerts.length > 0">
+    <div class="alerts-section" v-if="alerts && alerts.length > 0">
       <h2>Active Alerts</h2>
       <div class="alerts-grid">
         <div 
@@ -26,34 +26,34 @@
     <div class="health-section">
       <h2>System Health</h2>
       <div class="health-grid">
-        <div class="health-card" :class="health.status">
+                <div class="health-card" :class="health?.status || 'unknown'">
           <h3>Overall Status</h3>
-          <div class="status-indicator">{{ health.status }}</div>
-          <p>Last checked: {{ formatTime(health.timestamp) }}</p>
+          <div class="status-indicator">{{ health?.status || 'Unknown' }}</div>
+          <p>Last checked: {{ health?.timestamp ? formatTime(health.timestamp) : 'Never' }}</p>
         </div>
         
-        <div class="health-card" :class="health.checks.database.status">
+        <div class="health-card" :class="health?.checks?.database?.status || 'unknown'">
           <h3>Database</h3>
-          <div class="status-indicator">{{ health.checks.database.status }}</div>
-          <p>Response: {{ health.checks.database.responseTime }}ms</p>
+          <div class="status-indicator">{{ health?.checks?.database?.status || 'Unknown' }}</div>
+          <p>Response: {{ health?.checks?.database?.responseTime || 0 }}ms</p>
         </div>
         
-        <div class="health-card" :class="health.checks.disk.status">
+        <div class="health-card" :class="health?.checks?.disk?.status || 'unknown'">
           <h3>Disk Usage</h3>
-          <div class="status-indicator">{{ health.checks.disk.status }}</div>
-          <p>{{ health.checks.disk.usage.toFixed(1) }}% used</p>
+          <div class="status-indicator">{{ health?.checks?.disk?.status || 'Unknown' }}</div>
+          <p>{{ health?.checks?.disk?.usage?.toFixed(1) || '0.0' }}% used</p>
         </div>
         
-        <div class="health-card" :class="health.checks.memory.status">
+        <div class="health-card" :class="health?.checks?.memory?.status || 'unknown'">
           <h3>Memory Usage</h3>
-          <div class="status-indicator">{{ health.checks.memory.status }}</div>
-          <p>{{ health.checks.memory.usage.toFixed(1) }}% used</p>
+          <div class="status-indicator">{{ health?.checks?.memory?.status || 'Unknown' }}</div>
+          <p>{{ health?.checks?.memory?.usage?.toFixed(1) || '0.0' }}% used</p>
         </div>
-
-        <div class="health-card" :class="health.checks.cpu.status">
+        
+        <div class="health-card" :class="health?.checks?.cpu?.status || 'unknown'">
           <h3>CPU Usage</h3>
-          <div class="status-indicator">{{ health.checks.cpu.status }}</div>
-          <p>{{ health.checks.cpu.usage.toFixed(1) }}% used</p>
+          <div class="status-indicator">{{ health?.checks?.cpu?.status || 'Unknown' }}</div>
+          <p>{{ health?.checks?.cpu?.usage?.toFixed(1) || '0.0' }}% used</p>
         </div>
       </div>
     </div>
@@ -64,35 +64,35 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <h3>CPU</h3>
-          <div class="metric-value">{{ system.cpu.usage.toFixed(1) }}%</div>
-          <p>Load: {{ system.cpu.loadAverage.map(l => l.toFixed(2)).join(', ') }}</p>
-          <p>Cores: {{ system.cpu.cores }}</p>
+          <div class="metric-value">{{ system?.cpu?.usage?.toFixed(1) || '0.0' }}%</div>
+          <p>Load: {{ system?.cpu?.loadAverage ? system.cpu.loadAverage.map(l => l.toFixed(2)).join(', ') : '0.00, 0.00, 0.00' }}</p>
+          <p>Cores: {{ system?.cpu?.cores || 0 }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Memory</h3>
-          <div class="metric-value">{{ system.memory.usagePercent.toFixed(1) }}%</div>
-          <p>Used: {{ formatBytes(system.memory.used) }}</p>
-          <p>Free: {{ formatBytes(system.memory.free) }}</p>
+          <div class="metric-value">{{ system?.memory?.usagePercent?.toFixed(1) || '0.0' }}%</div>
+          <p>Used: {{ formatBytes(system?.memory?.used || 0) }}</p>
+          <p>Free: {{ formatBytes(system?.memory?.free || 0) }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Disk</h3>
-          <div class="metric-value">{{ system.disk.usagePercent.toFixed(1) }}%</div>
-          <p>Used: {{ formatBytes(system.disk.used) }}</p>
-          <p>Free: {{ formatBytes(system.disk.free) }}</p>
+          <div class="metric-value">{{ system?.disk?.usagePercent?.toFixed(1) || '0.0' }}%</div>
+          <p>Used: {{ formatBytes(system?.disk?.used || 0) }}</p>
+          <p>Free: {{ formatBytes(system?.disk?.free || 0) }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Network</h3>
-          <div class="metric-value">{{ formatBytes(system.network.bytesIn + system.network.bytesOut) }}</div>
-          <p>In: {{ formatBytes(system.network.bytesIn) }}</p>
-          <p>Out: {{ formatBytes(system.network.bytesOut) }}</p>
+          <div class="metric-value">{{ formatBytes((system?.network?.bytesIn || 0) + (system?.network?.bytesOut || 0)) }}</div>
+          <p>In: {{ formatBytes(system?.network?.bytesIn || 0) }}</p>
+          <p>Out: {{ formatBytes(system?.network?.bytesOut || 0) }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Uptime</h3>
-          <div class="metric-value">{{ formatUptime(system.uptime) }}</div>
+          <div class="metric-value">{{ formatUptime(system?.uptime || 0) }}</div>
         </div>
       </div>
     </div>
@@ -103,21 +103,21 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <h3>Response Times</h3>
-          <div class="metric-value">{{ performance.responseTimes.average.toFixed(0) }}ms</div>
-          <p>P95: {{ performance.responseTimes.p95.toFixed(0) }}ms</p>
-          <p>P99: {{ performance.responseTimes.p99.toFixed(0) }}ms</p>
+          <div class="metric-value">{{ performance?.responseTimes?.average?.toFixed(0) || '0' }}ms</div>
+          <p>P95: {{ performance?.responseTimes?.p95?.toFixed(0) || '0' }}ms</p>
+          <p>P99: {{ performance?.responseTimes?.p99?.toFixed(0) || '0' }}ms</p>
         </div>
         
         <div class="metric-card">
           <h3>Error Rate</h3>
-          <div class="metric-value" :class="getErrorRateClass(performance.errorRate)">
-            {{ performance.errorRate.toFixed(2) }}%
+          <div class="metric-value" :class="getErrorRateClass(performance?.errorRate || 0)">
+            {{ performance?.errorRate?.toFixed(2) || '0.00' }}%
           </div>
         </div>
         
         <div class="metric-card">
           <h3>Request Rate</h3>
-          <div class="metric-value">{{ performance.requestRate.toFixed(1) }}/s</div>
+          <div class="metric-value">{{ performance?.requestRate?.toFixed(1) || '0.0' }}/s</div>
         </div>
       </div>
     </div>
@@ -128,30 +128,30 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <h3>Requests</h3>
-          <div class="metric-value">{{ application.requests.total }}</div>
-          <p>Success: {{ application.requests.successful }}</p>
-          <p>Failed: {{ application.requests.failed }}</p>
+          <div class="metric-value">{{ application?.requests?.total || 0 }}</div>
+          <p>Success: {{ application?.requests?.successful || 0 }}</p>
+          <p>Failed: {{ application?.requests?.failed || 0 }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Users</h3>
-          <div class="metric-value">{{ application.users.total }}</div>
-          <p>New Today: {{ application.users.newToday }}</p>
-          <p>Active Today: {{ application.users.activeToday }}</p>
+          <div class="metric-value">{{ application?.users?.total || 0 }}</div>
+          <p>New Today: {{ application?.users?.newToday || 0 }}</p>
+          <p>Active Today: {{ application?.users?.activeToday || 0 }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Cars</h3>
-          <div class="metric-value">{{ application.cars.total }}</div>
-          <p>Verified: {{ application.cars.verified }}</p>
-          <p>Pending: {{ application.cars.pending }}</p>
-          <p>Draft: {{ application.cars.draft }}</p>
+          <div class="metric-value">{{ application?.cars?.total || 0 }}</div>
+          <p>Verified: {{ application?.cars?.verified || 0 }}</p>
+          <p>Pending: {{ application?.cars?.pending || 0 }}</p>
+          <p>Draft: {{ application?.cars?.draft || 0 }}</p>
         </div>
         
         <div class="metric-card">
           <h3>Messages</h3>
-          <div class="metric-value">{{ application.messages.total }}</div>
-          <p>Sent Today: {{ application.messages.sentToday }}</p>
+          <div class="metric-value">{{ application?.messages?.total || 0 }}</div>
+          <p>Sent Today: {{ application?.messages?.sentToday || 0 }}</p>
         </div>
       </div>
     </div>
@@ -160,17 +160,17 @@
     <div class="metrics-section">
       <h2>Database Metrics</h2>
       <div class="metrics-grid">
-        <div class="metric-card" :class="database.status">
+        <div class="metric-card" :class="database?.status || 'unknown'">
           <h3>Database Status</h3>
-          <div class="metric-value">{{ database.status }}</div>
-          <p>Response: {{ database.responseTime }}ms</p>
+          <div class="metric-value">{{ database?.status || 'Unknown' }}</div>
+          <p>Response: {{ database?.responseTime || 0 }}ms</p>
         </div>
         
         <div class="metric-card">
           <h3>Table Counts</h3>
-          <p>Users: {{ database.tables.users }}</p>
-          <p>Cars: {{ database.tables.cars }}</p>
-          <p>Messages: {{ database.tables.messages }}</p>
+          <p>Users: {{ database?.tables?.users || 0 }}</p>
+          <p>Cars: {{ database?.tables?.cars || 0 }}</p>
+          <p>Messages: {{ database?.tables?.messages || 0 }}</p>
         </div>
       </div>
     </div>
@@ -287,7 +287,7 @@ const loading = ref(false)
 const lastUpdated = ref<string | null>(null)
 let refreshInterval: number | null = null
 
-const activeAlerts = computed(() => alerts.value.filter(alert => !alert.resolved))
+const activeAlerts = computed(() => (alerts.value || []).filter(alert => !alert.resolved))
 
 const refreshMetrics = async () => {
   loading.value = true

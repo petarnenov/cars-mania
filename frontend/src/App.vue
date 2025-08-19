@@ -29,6 +29,7 @@ const isAdmin = computed(() => authState.user?.role === 'ADMIN')
 		<router-link v-if="isAuthed && !isAdmin" to="/cars/new">New Car</router-link>
 		<router-link v-if="isAuthed" to="/inbox">Inbox</router-link>
 		<router-link v-if="isAdmin" to="/admin/moderation">Admin Queue</router-link>
+		<router-link v-if="isAdmin" to="/monitoring">Monitoring</router-link>
 		<button v-if="isAuthed" @click="logout">Logout</button>
 	</nav>
 	<router-view />
