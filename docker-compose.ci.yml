@@ -3,7 +3,7 @@ services:
     image: ${BACKEND_IMAGE}
     container_name: cars-backend
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=test
       - DATABASE_URL=file:/data/dev.db
       - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-prod_access_secret}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-prod_refresh_secret}
