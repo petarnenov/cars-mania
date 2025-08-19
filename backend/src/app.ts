@@ -5,6 +5,15 @@ import expressStatic from 'express';
 import { useCookies } from './middleware/auth';
 import { requestLogger, errorLogger } from './middleware/logging';
 import { collectMetrics } from './routes/metrics';
+import { 
+  generalLimiter, 
+  authLimiter, 
+  uploadLimiter, 
+  messagingLimiter, 
+  carCreationLimiter,
+  adminLimiter,
+  getRateLimiter 
+} from './middleware/rateLimit';
 
 import authRouter from './routes/auth';
 import carsRouter from './routes/cars';
@@ -20,18 +29,30 @@ app.use(cors());
 app.use(express.json());
 app.use(useCookies());
 
+// Rate limiting middleware (disabled in test environment)
+if (process.env.NODE_ENV !== 'test') {
+  app.use(getRateLimiter(process.env.NODE_ENV));
+}
+
 // Operational middleware
 if (process.env.NODE_ENV !== 'test') {
   app.use(requestLogger);
   app.use(collectMetrics);
 }
 
-// Routes
-app.use('/api/auth', authRouter);
-app.use('/api/cars', carsRouter);
+// Routes with specific rate limiting (disabled in test environment)
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api/auth', authLimiter, authRouter);
+  app.use('/api/cars', carCreationLimiter, carsRouter);
+  app.use('/api/upload', uploadLimiter, uploadsRouter);
+  app.use('/api', messagingLimiter, messagingRouter);
+} else {
+  app.use('/api/auth', authRouter);
+  app.use('/api/cars', carsRouter);
+  app.use('/api/upload', uploadsRouter);
+  app.use('/api', messagingRouter);
+}
 app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
-app.use('/api/upload', uploadsRouter);
-app.use('/api', messagingRouter);
 app.use('/api', metricsRouter);
 
 // test-only helper routes (used by e2e environment)
