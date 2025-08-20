@@ -39,7 +39,7 @@ describe('Monitoring.vue', () => {
       // Mock successful API responses
       mockApi.mockResolvedValue({})
       
-      const _wrapper = mount(Monitoring)
+      mount(Monitoring)
       await nextTick()
       
       expect(mockApi).toHaveBeenCalledWith('/monitoring/system')
@@ -130,7 +130,7 @@ describe('Monitoring.vue', () => {
       vi.useFakeTimers()
       mockApi.mockResolvedValue({})
       
-      const wrapper = mount(Monitoring)
+      mount(Monitoring)
       await nextTick()
       
       // Fast-forward 30 seconds

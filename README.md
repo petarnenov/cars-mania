@@ -7,7 +7,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 
-A modern browser-based marketplace for buying and selling cars with role-based access 
+A modern browser-based marketplace for buying and selling cars with role-based access  
 control, admin moderation, and real-time messaging.
 
 ## ✨ Features
@@ -139,7 +139,7 @@ npm run e2e:report   # View results
 
 ## 📁 Project Structure
 
-```
+```text
 cars-mania/
 ├── frontend/                 # Vue 3 + TypeScript SPA
 │   ├── src/
@@ -204,7 +204,7 @@ docker pull ghcr.io/petarnenov/cars-mania/backend:main-abc1234
 docker pull ghcr.io/petarnenov/cars-mania/frontend:pr-42
 ```
 
-**Retention**: Old images are automatically cleaned up, keeping the latest 10 
+**Retention**: Old images are automatically cleaned up, keeping the latest 10  
 versions per component.
 
 ### Production Considerations
@@ -232,4 +232,4 @@ This project is licensed under the ISC License.
 
 ---
 
-**Built with ❤️ using Vue 3, Node.js, and TypeScript**
+**Built with ❤️ using Vue 3, Node.js, and TypeScript**  

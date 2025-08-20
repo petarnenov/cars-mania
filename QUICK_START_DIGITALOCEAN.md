@@ -30,11 +30,13 @@ Get your Cars Mania production server running on DigitalOcean in 15 minutes!
 ### Option A: Using Setup Script (Recommended)
 
 1. **Connect to your server as root**
+
    ```bash
    ssh root@YOUR_SERVER_IP
    ```
 
 2. **Download and run setup script**
+
    ```bash
    wget https://raw.githubusercontent.com/petarnenov/cars-mania/main/scripts/setup-digitalocean.sh
    chmod +x setup-digitalocean.sh
@@ -42,6 +44,7 @@ Get your Cars Mania production server running on DigitalOcean in 15 minutes!
    ```
 
 3. **Add your SSH key**
+
    ```bash
    # Copy your public key to the server
    nano /home/cars-mania/.ssh/authorized_keys
@@ -49,6 +52,7 @@ Get your Cars Mania production server running on DigitalOcean in 15 minutes!
    ```
 
 4. **Complete setup as cars-mania user**
+
    ```bash
    su - cars-mania
    /opt/cars-mania/complete-setup.sh
@@ -61,17 +65,20 @@ Follow the detailed guide in `DIGITALOCEAN_SETUP.md`
 ## Step 3: Configure Environment
 
 1. **Edit environment file**
+
    ```bash
    nano .env.production
    ```
 
 2. **Generate JWT secrets**
+
    ```bash
    openssl rand -base64 32
    openssl rand -base64 32
    ```
 
 3. **Update environment variables**
+
    ```bash
    # Replace these in .env.production:
    JWT_ACCESS_SECRET=your_generated_secret_1
@@ -81,16 +88,19 @@ Follow the detailed guide in `DIGITALOCEAN_SETUP.md`
 ## Step 4: Deploy Application
 
 1. **Start services**
+
    ```bash
    ./deploy.sh start
    ```
 
 2. **Check status**
+
    ```bash
    ./deploy.sh status
    ```
 
 3. **View logs**
+
    ```bash
    ./deploy.sh logs
    ```
@@ -98,11 +108,13 @@ Follow the detailed guide in `DIGITALOCEAN_SETUP.md`
 ## Step 5: Test Your Application
 
 1. **Test backend health**
+
    ```bash
    curl http://localhost:3001/api/health
    ```
 
 2. **Test frontend**
+
    ```bash
    curl http://localhost:80
    ```
@@ -125,6 +137,7 @@ For automatic deployments:
    - `PROD_PORT`: 22
 
 3. **Test deployment**
+
    ```bash
    # Push to main branch to trigger deployment
    git commit --allow-empty -m "test: trigger deployment"
@@ -137,6 +150,7 @@ For automatic deployments:
    - Add A record: `yourdomain.com` → `YOUR_SERVER_IP`
 
 2. **Install SSL certificate**
+
    ```bash
    sudo apt install certbot
    sudo certbot certonly --standalone -d yourdomain.com
@@ -150,6 +164,7 @@ For automatic deployments:
 ### Common Issues
 
 1. **Can't connect via SSH**
+
    ```bash
    # Check if SSH is running
    sudo systemctl status sshd
@@ -159,6 +174,7 @@ For automatic deployments:
    ```
 
 2. **Services won't start**
+
    ```bash
    # Check logs
    ./deploy.sh logs
@@ -168,6 +184,7 @@ For automatic deployments:
    ```
 
 3. **Port conflicts**
+
    ```bash
    # Check what's using ports
    sudo netstat -tulpn | grep :80
