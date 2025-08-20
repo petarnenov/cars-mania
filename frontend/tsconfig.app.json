@@ -11,7 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.spec.ts", "src/**/*.test.ts"],
-  "exclude": ["tests-e2e/**"],
-  "types": ["vitest/globals"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": ["tests-e2e/**", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "types": ["node"]
 }

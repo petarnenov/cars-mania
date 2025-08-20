@@ -265,7 +265,8 @@ const health = ref<HealthCheck>({
     memory: { status: 'unhealthy', usage: 0 },
     cpu: { status: 'unhealthy', usage: 0 }
   },
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
+  alerts: []
 })
 
 const alerts = ref<Alert[]>([])
