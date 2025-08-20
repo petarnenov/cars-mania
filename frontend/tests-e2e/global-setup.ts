@@ -19,7 +19,7 @@ export default async function globalSetup(_config: FullConfig) {
 		JWT_REFRESH_SECRET: 'test_refresh_secret',
 		ACCESS_TOKEN_TTL_SECONDS: '900',
 		REFRESH_TOKEN_TTL_SECONDS: '1209600',
-		DATABASE_URL: 'file:./test-e2e.db',
+		DATABASE_URL: 'file:./test.db',
 	}
 
 	// Ensure schema is in place for a fresh db

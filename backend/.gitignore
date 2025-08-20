@@ -4,3 +4,8 @@ node_modules
 
 /src/generated/prisma
 tmp-upload-*
+
+# Test database
+test.db
+unit-test.db
+test-e2e.db

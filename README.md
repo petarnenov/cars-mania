@@ -137,6 +137,8 @@ npm run e2e:report   # View results
 
 **Coverage Targets**: 65% statements/branches/functions/lines
 
+**Test Database**: All tests (unit, integration, and E2E) use a single test database (`test.db`) to ensure consistency and isolation.
+
 ## 📁 Project Structure
 
 ```text

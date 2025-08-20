@@ -40,7 +40,7 @@ jobs:
         working-directory: backend
         env:
           NODE_ENV: test
-          DATABASE_URL: file:./unit-test.db
+          DATABASE_URL: file:./test.db
         run: npx prisma db push --skip-generate --schema=prisma/schema.prisma
 
       - name: Type-check backend
@@ -58,7 +58,7 @@ jobs:
           JWT_REFRESH_SECRET: test_refresh_secret
           ACCESS_TOKEN_TTL_SECONDS: 900
           REFRESH_TOKEN_TTL_SECONDS: 1209600
-          DATABASE_URL: file:./unit-test.db
+          DATABASE_URL: file:./test.db
         run: npm run test:cov
 
       - name: Upload backend coverage to Codecov
