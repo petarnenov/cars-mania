@@ -22,17 +22,21 @@ This guide explains how to set up branch protection rules to ensure merge reques
 3. Check the following options:
 
 #### Required Status Checks
+
 - ✅ **Require status checks to pass before merging**
 - ✅ **Require branches to be up to date before merging**
 - ✅ **Require conversation resolution before merging**
 
 #### Status Checks to Require
+
 Add these status checks (they should appear after CI runs):
+
 - `build-and-test` (from CI workflow)
 - `build-and-push-backend` (from CI workflow)  
 - `build-and-push-frontend` (from CI workflow)
 
 #### Additional Settings
+
 - ✅ **Require a pull request before merging**
 - ✅ **Require approvals** (set to 1 or more)
 - ✅ **Dismiss stale PR approvals when new commits are pushed**
@@ -69,17 +73,20 @@ Add these status checks (they should appear after CI runs):
 The following status checks will be required based on your current CI workflow:
 
 ### `build-and-test`
+
 - Runs on: `ubuntu-latest`
 - Includes: Backend tests, Frontend tests, Linting, Type checking
 - Timeout: 30 minutes
 
-### `build-and-push-backend` 
+### `build-and-push-backend`
+
 - Runs on: `ubuntu-latest`
 - Includes: Docker build and push for backend
 - Depends on: `build-and-test`
 
 ### `build-and-push-frontend`
-- Runs on: `ubuntu-latest` 
+
+- Runs on: `ubuntu-latest`
 - Includes: Docker build and push for frontend
 - Depends on: `build-and-test`
 
@@ -90,6 +97,7 @@ The following status checks will be required based on your current CI workflow:
 If status checks don't appear in the branch protection settings:
 
 1. **Ensure CI runs on PRs**: Check that your workflow has:
+
    ```yaml
    on:
      pull_request:
@@ -97,6 +105,7 @@ If status checks don't appear in the branch protection settings:
    ```
 
 2. **Check workflow permissions**: Ensure the workflow has proper permissions:
+
    ```yaml
    permissions:
      contents: read
@@ -125,7 +134,7 @@ If the merge button is still available when it shouldn't be:
 
 Create a `.github/CODEOWNERS` file to require specific reviewers:
 
-```
+```text
 # Global owners
 * @petarnenov
 
@@ -142,6 +151,7 @@ frontend/ @frontend-team
 ### Required Reviewers
 
 In branch protection settings, you can also:
+
 - Require specific reviewers
 - Require review from code owners
 - Set minimum number of approvals
@@ -173,6 +183,7 @@ This setup provides:
 ### Emergency Overrides
 
 In emergency situations, repository admins can:
+
 - Temporarily disable branch protection
 - Force merge (if allowed)
 - Override status checks (if configured)
