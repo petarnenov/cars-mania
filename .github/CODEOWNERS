@@ -1,0 +1,34 @@
+# Global repository owner
+* @petarnenov
+
+# Backend specific files
+backend/ @petarnenov
+backend/src/ @petarnenov
+backend/tests/ @petarnenov
+backend/prisma/ @petarnenov
+
+# Frontend specific files  
+frontend/ @petarnenov
+frontend/src/ @petarnenov
+frontend/src/views/ @petarnenov
+frontend/src/components/ @petarnenov
+frontend/src/api/ @petarnenov
+
+# GitHub workflows and configuration
+.github/ @petarnenov
+.github/workflows/ @petarnenov
+
+# Documentation
+*.md @petarnenov
+docs/ @petarnenov
+
+# Configuration files
+package.json @petarnenov
+tsconfig*.json @petarnenov
+vite.config.ts @petarnenov
+Dockerfile* @petarnenov
+docker-compose*.yml @petarnenov
+
+# Scripts
+scripts/ @petarnenov
+deploy.sh @petarnenov
