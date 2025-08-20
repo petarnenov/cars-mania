@@ -11,11 +11,13 @@ This guide walks you through setting up a production server on DigitalOcean for 
 ## Step 1: Create DigitalOcean Droplet
 
 ### 1.1 Login to DigitalOcean
+
 1. Go to [DigitalOcean](https://digitalocean.com)
 2. Sign in to your account
 3. Click "Create" → "Droplets"
 
 ### 1.2 Configure Droplet
+
 - **Choose an image**: Ubuntu 22.04 LTS
 - **Choose a plan**: Basic
 - **Choose a datacenter region**: Select closest to your users
@@ -23,6 +25,7 @@ This guide walks you through setting up a production server on DigitalOcean for 
 - **Finalize and create**: Click "Create Droplet"
 
 ### 1.3 Recommended Droplet Specifications
+
 - **Size**: Basic → Regular → 2GB RAM / 1 vCPU / 50GB SSD ($12/month)
 - **Region**: Choose closest to your target users
 - **Backup**: Enable for $2/month (recommended)
@@ -30,12 +33,14 @@ This guide walks you through setting up a production server on DigitalOcean for 
 ## Step 2: Initial Server Setup
 
 ### 2.1 Connect to Your Server
+
 ```bash
 # Replace YOUR_SERVER_IP with your droplet's IP
 ssh root@YOUR_SERVER_IP
 ```
 
 ### 2.2 Create Non-Root User
+
 ```bash
 # Create new user
 adduser cars-mania
@@ -48,6 +53,7 @@ su - cars-mania
 ```
 
 ### 2.3 Set Up SSH Key Authentication
+
 ```bash
 # Create .ssh directory
 mkdir ~/.ssh
@@ -63,12 +69,14 @@ nano ~/.ssh/authorized_keys
 ```
 
 ### 2.4 Configure SSH Security
+
 ```bash
 # Edit SSH config
 sudo nano /etc/ssh/sshd_config
 ```
 
 Add/modify these lines:
+
 ```
 PermitRootLogin no
 PasswordAuthentication no
@@ -92,11 +100,13 @@ ssh cars-mania@206.189.169.189
 ## Step 3: Install Required Software
 
 ### 3.1 Update System
+
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
 ### 3.2 Install Docker
+
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -111,6 +121,7 @@ exit
 ```
 
 ### 3.3 Install Docker Compose
+
 ```bash
 # Install Docker Compose
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -121,6 +132,7 @@ docker-compose --version
 ```
 
 ### 3.4 Install Additional Tools
+
 ```bash
 # Install useful tools
 sudo apt install -y curl wget git nano htop ufw fail2ban
@@ -129,6 +141,7 @@ sudo apt install -y curl wget git nano htop ufw fail2ban
 ## Step 4: Configure Firewall
 
 ### 4.1 Set Up UFW Firewall
+
 ```bash
 # Allow SSH
 sudo ufw allow ssh
@@ -145,6 +158,7 @@ sudo ufw status
 ```
 
 ### 4.2 Configure Fail2Ban
+
 ```bash
 # Configure fail2ban for SSH protection
 sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
@@ -155,6 +169,7 @@ sudo systemctl start fail2ban
 ## Step 5: Set Up Project Directory
 
 ### 5.1 Create Project Structure
+
 ```bash
 # Create project directory
 sudo mkdir -p /opt/cars-mania
@@ -166,6 +181,7 @@ mkdir -p uploads prisma logs backups
 ```
 
 ### 5.2 Clone Project Files
+
 ```bash
 # Download production files
 wget https://raw.githubusercontent.com/petarnenov/cars-mania/main/docker-compose.prod.yml
@@ -177,6 +193,7 @@ chmod +x deploy.sh
 ```
 
 ### 5.3 Configure Environment
+
 ```bash
 # Copy environment template
 cp production.env.example .env.production
@@ -186,6 +203,7 @@ nano .env.production
 ```
 
 **Required environment variables:**
+
 ```bash
 # Database
 DATABASE_URL=file:/app/prisma/production.db
@@ -213,6 +231,7 @@ FRONTEND_IMAGE=ghcr.io/petarnenov/cars-mania/frontend:latest
 ## Step 6: Generate Secure Secrets
 
 ### 6.1 Generate JWT Secrets
+
 ```bash
 # Generate secure random strings
 openssl rand -base64 32
@@ -222,6 +241,7 @@ openssl rand -base64 32
 ```
 
 ### 6.2 Update Environment File
+
 ```bash
 # Edit the .env.production file with your generated secrets
 nano .env.production
@@ -230,6 +250,7 @@ nano .env.production
 ## Step 7: Initial Deployment
 
 ### 7.1 Test Deployment
+
 ```bash
 # Start services
 ./deploy.sh start
@@ -242,6 +263,7 @@ nano .env.production
 ```
 
 ### 7.2 Verify Services
+
 ```bash
 # Check if services are running
 docker ps
@@ -256,11 +278,13 @@ curl http://localhost:80
 ## Step 8: Configure Domain (Optional)
 
 ### 8.1 Point Domain to Server
+
 1. Go to your domain registrar
 2. Add A record pointing to your server IP
 3. Wait for DNS propagation (up to 24 hours)
 
 ### 8.2 Set Up SSL with Let's Encrypt
+
 ```bash
 # Install Certbot
 sudo apt install certbot
@@ -274,6 +298,7 @@ nano nginx/nginx.conf
 ```
 
 **nginx.conf content:**
+
 ```nginx
 events {
     worker_connections 1024;
@@ -317,6 +342,7 @@ http {
 ```
 
 ### 8.3 Update Docker Compose for SSL
+
 ```bash
 # Edit docker-compose.prod.yml to include nginx
 nano docker-compose.prod.yml
@@ -327,12 +353,14 @@ Add nginx service and update environment variables.
 ## Step 9: Set Up Monitoring
 
 ### 9.1 Create Monitoring Script
+
 ```bash
 # Create monitoring script
 nano monitor.sh
 ```
 
 **monitor.sh content:**
+
 ```bash
 #!/bin/bash
 
@@ -365,6 +393,7 @@ chmod +x monitor.sh
 ```
 
 ### 9.2 Set Up Cron Job
+
 ```bash
 # Edit crontab
 crontab -e
@@ -376,6 +405,7 @@ crontab -e
 ## Step 10: Configure GitHub Secrets
 
 ### 10.1 Get Server Information
+
 ```bash
 # Get server IP
 curl ifconfig.me
@@ -385,9 +415,11 @@ cat ~/.ssh/id_rsa.pub
 ```
 
 ### 10.2 Set GitHub Repository Secrets
+
 Go to your GitHub repository → Settings → Secrets and variables → Actions
 
 Add these secrets:
+
 - `PROD_HOST`: Your server IP or domain
 - `PROD_USER`: cars-mania
 - `PROD_SSH_KEY`: Your private SSH key
@@ -396,6 +428,7 @@ Add these secrets:
 ## Step 11: Test Production Deployment
 
 ### 11.1 Trigger Deployment
+
 ```bash
 # Push a test commit to main branch
 git commit --allow-empty -m "test: trigger production deployment"
@@ -403,6 +436,7 @@ git push origin main
 ```
 
 ### 11.2 Monitor Deployment
+
 ```bash
 # Watch deployment logs
 ./deploy.sh logs
@@ -418,12 +452,14 @@ curl http://localhost:80
 ## Step 12: Backup Strategy
 
 ### 12.1 Create Backup Script
+
 ```bash
 # Create backup script
 nano backup.sh
 ```
 
 **backup.sh content:**
+
 ```bash
 #!/bin/bash
 
@@ -451,6 +487,7 @@ chmod +x backup.sh
 ```
 
 ### 12.2 Schedule Daily Backups
+
 ```bash
 # Edit crontab
 crontab -e
@@ -464,6 +501,7 @@ crontab -e
 ### Common Issues
 
 1. **SSH service issues**
+
    ```bash
    # Check SSH service status
    sudo systemctl status sshd
@@ -477,6 +515,7 @@ crontab -e
    ```
 
 2. **Services won't start**
+
    ```bash
    # Check logs
    ./deploy.sh logs
@@ -486,6 +525,7 @@ crontab -e
    ```
 
 2. **Port conflicts**
+
    ```bash
    # Check what's using ports
    sudo netstat -tulpn | grep :80
@@ -493,6 +533,7 @@ crontab -e
    ```
 
 3. **Docker issues**
+
    ```bash
    # Restart Docker
    sudo systemctl restart docker
@@ -502,6 +543,7 @@ crontab -e
    ```
 
 4. **SSL certificate issues**
+
    ```bash
    # Renew certificate
    sudo certbot renew

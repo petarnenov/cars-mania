@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 // General rate limiter for all routes
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 10000, // Limit each IP to 10000 requests per windowMs (increased by 100x)
   message: {
     error: 'Too many requests from this IP, please try again later.',
     retryAfter: '15 minutes'
@@ -22,7 +22,7 @@ export const generalLimiter = rateLimit({
 // Strict rate limiter for authentication endpoints
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
+  max: 500, // Limit each IP to 500 requests per windowMs (increased by 100x)
   message: {
     error: 'Too many authentication attempts, please try again later.',
     retryAfter: '15 minutes'
@@ -40,7 +40,7 @@ export const authLimiter = rateLimit({
 // Rate limiter for file uploads
 export const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // Limit each IP to 10 uploads per hour
+  max: 1000, // Limit each IP to 1000 uploads per hour (increased by 100x)
   message: {
     error: 'Too many file uploads, please try again later.',
     retryAfter: '1 hour'
@@ -58,7 +58,7 @@ export const uploadLimiter = rateLimit({
 // Rate limiter for API endpoints
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
+  max: 20000, // Limit each IP to 20000 requests per windowMs (increased by 100x)
   message: {
     error: 'Too many API requests, please try again later.',
     retryAfter: '15 minutes'
@@ -76,7 +76,7 @@ export const apiLimiter = rateLimit({
 // Rate limiter for messaging
 export const messagingLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 20, // Limit each IP to 20 messages per 5 minutes
+  max: 2000, // Limit each IP to 2000 messages per 5 minutes (increased by 100x)
   message: {
     error: 'Too many messages sent, please try again later.',
     retryAfter: '5 minutes'
@@ -94,7 +94,7 @@ export const messagingLimiter = rateLimit({
 // Rate limiter for car creation
 export const carCreationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 car creations per hour
+  max: 500, // Limit each IP to 500 car creations per hour (increased by 100x)
   message: {
     error: 'Too many car listings created, please try again later.',
     retryAfter: '1 hour'
@@ -112,7 +112,7 @@ export const carCreationLimiter = rateLimit({
 // Rate limiter for admin operations
 export const adminLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 admin operations per 15 minutes
+  max: 5000, // Limit each IP to 5000 admin operations per 15 minutes (increased by 100x)
   message: {
     error: 'Too many admin operations, please try again later.',
     retryAfter: '15 minutes'
@@ -130,7 +130,7 @@ export const adminLimiter = rateLimit({
 // Development rate limiter (more lenient)
 export const developmentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Much higher limit for development
+  max: 100000, // Much higher limit for development (increased by 100x)
   message: {
     error: 'Development rate limit exceeded.',
     retryAfter: '15 minutes'

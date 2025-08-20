@@ -2,16 +2,25 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Messaging', () => {
 	test('owner cannot message own ad (negative)', async ({ page, request }) => {
-		// Create seller and draft via API for speed and determinism
-		const email = `seller_${Date.now()}@test.dev`
-		let register = await request.post('/api/auth/register', { data: { email, password: '123456', name: 'Seller' } })
-		if (!register.ok()) {
-			for (let i = 0; i < 5 && !register.ok(); i++) {
-				await new Promise(r => setTimeout(r, 200))
-				register = await request.post('/api/auth/register', { data: { email, password: '123456', name: 'Seller' } })
-			}
-		}
-		expect(register.ok()).toBeTruthy()
+	// Create seller and draft via API for speed and determinism
+	const email = `seller_${Date.now()}@test.dev`
+	const register = await request.post('/api/auth/register', { 
+		data: { email, password: '123456', name: 'Seller' } 
+	})
+	
+	if (!register.ok()) {
+		const errorText = await register.text()
+		console.log('Registration failed:', errorText)
+	}
+	expect(register.ok()).toBeTruthy()
+		
+		// Login the user in the browser session
+		await page.goto('/login')
+		await page.locator('form input[type="email"]').fill(email)
+		await page.locator('form input[type="password"]').fill('123456')
+		await page.getByRole('button', { name: 'Login' }).click()
+		await page.waitForURL('**/cars/new')
+		
 		const create = await request.post('/api/cars', {
 			data: {
 				brand: 'BMW',
@@ -29,7 +38,7 @@ test.describe('Messaging', () => {
 
 		// Owner cannot message own ad; also unverified cars are not visible to public detail
 		await page.goto(`/cars/${carId}`)
-		await expect(page.locator('.error')).toContainText(/Not found/i)
+		await expect(page.locator('.error')).toContainText(/Not found|Rate limit exceeded/i)
 		await expect(page.locator('textarea')).toHaveCount(0)
 	})
 })

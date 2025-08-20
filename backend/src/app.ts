@@ -5,6 +5,8 @@ import expressStatic from 'express';
 import { useCookies } from './middleware/auth';
 import { requestLogger, errorLogger } from './middleware/logging';
 import { collectMetrics } from './routes/metrics';
+import { monitoringMiddleware } from './lib/monitoring.js';
+import { prisma } from './lib/prisma.js';
 import { 
   generalLimiter, 
   authLimiter, 
@@ -21,6 +23,7 @@ import uploadsRouter from './routes/uploads';
 import messagingRouter from './routes/messaging';
 import testRouter from './routes/test';
 import metricsRouter from './routes/metrics';
+import monitoringRouter from './routes/monitoring';
 
 const app = express();
 
@@ -30,30 +33,36 @@ app.use(express.json());
 app.use(useCookies());
 
 // Rate limiting middleware (disabled in test environment)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'e2e') {
   app.use(getRateLimiter(process.env.NODE_ENV));
 }
 
 // Operational middleware
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'e2e') {
   app.use(requestLogger);
   app.use(collectMetrics);
+  app.use(monitoringMiddleware(prisma));
 }
 
-// Routes with specific rate limiting (disabled in test environment)
-if (process.env.NODE_ENV !== 'test') {
+// Routes with specific rate limiting
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'e2e') {
   app.use('/api/auth', authLimiter, authRouter);
   app.use('/api/cars', carCreationLimiter, carsRouter);
   app.use('/api/upload', uploadLimiter, uploadsRouter);
   app.use('/api', messagingLimiter, messagingRouter);
+  app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
+  app.use('/api', metricsRouter);
+  app.use('/api/monitoring', monitoringRouter);
 } else {
+  // No rate limiting for test environments
   app.use('/api/auth', authRouter);
   app.use('/api/cars', carsRouter);
   app.use('/api/upload', uploadsRouter);
   app.use('/api', messagingRouter);
+  app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
+  app.use('/api', metricsRouter);
+  app.use('/api/monitoring', monitoringRouter);
 }
-app.use('/api/uploads', expressStatic.static(path.join(process.cwd(), 'uploads')));
-app.use('/api', metricsRouter);
 
 // test-only helper routes (used by e2e environment)
 if (process.env.NODE_ENV !== 'production') {
@@ -73,7 +82,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Error handling middleware (must be last)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'e2e') {
   app.use(errorLogger);
 }
 

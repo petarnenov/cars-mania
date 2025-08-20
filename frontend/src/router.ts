@@ -11,6 +11,7 @@ export const router = createRouter({
 		{ path: '/cars/new', component: () => import('./views/CreateCar.vue'), meta: { requiresAuth: true, requiresRole: 'USER' } },
 		{ path: '/cars/:id', component: () => import('./views/CarDetail.vue') },
 		{ path: '/admin/moderation', component: () => import('./views/AdminQueue.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
+		{ path: '/monitoring', component: () => import('./views/Monitoring.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
 		{ path: '/inbox', component: () => import('./views/Inbox.vue'), meta: { requiresAuth: true } },
 	],
 })

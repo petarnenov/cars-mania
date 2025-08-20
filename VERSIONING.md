@@ -1,11 +1,11 @@
 # Automatic Versioning System
 
-This document describes the automatic versioning system used in the Cars Mania 
+This document describes the automatic versioning system used in the Cars Mania  
 project to maintain consistent version numbers across frontend and backend.
 
 ## Overview
 
-The versioning system automatically increments version numbers when changes are 
+The versioning system automatically increments version numbers when changes are
 committed, ensuring both frontend and backend stay in sync.
 
 ## How It Works
@@ -29,6 +29,7 @@ npm run version:major  # Bump major version
 ## Version Format
 
 All packages use semantic versioning (SemVer):
+
 - **Major**: Breaking changes
 - **Minor**: New features (backward compatible)
 - **Patch**: Bug fixes (backward compatible)
@@ -59,13 +60,13 @@ npm version 1.2.3 --no-git-tag-version
 
 ## Configuration
 
-### Root Level
+### Root Level Configuration
 
 - `package.json` contains version scripts
 - `version-bump.js` handles automatic versioning logic
 - Git hooks trigger version updates
 
-### Backend/Frontend
+### Package Level Configuration
 
 - Each package has its own `package.json`
 - Versions are synchronized automatically

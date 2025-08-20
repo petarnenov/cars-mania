@@ -26,6 +26,7 @@ This guide covers common issues and their solutions for Cars Mania deployment.
    - Ensure "Workflow permissions" allows package write access
 
 4. **Use Personal Access Token** (if needed):
+
    ```yaml
    # In your workflow, replace GITHUB_TOKEN with a PAT
    - name: Log in to GHCR
@@ -43,6 +44,7 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Workflow Permissions**:
+
    ```yaml
    permissions:
      contents: read
@@ -51,6 +53,7 @@ This guide covers common issues and their solutions for Cars Mania deployment.
    ```
 
 2. **Verify Trigger Configuration**:
+
    ```yaml
    on:
      workflow_run:
@@ -71,16 +74,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Clear Docker Cache**:
+
    ```bash
    docker system prune -a
    ```
 
 2. **Check Dockerfile Syntax**:
+
    ```bash
    docker build --no-cache .
    ```
 
 3. **Verify Context Path**:
+
    ```yaml
    - name: Build and push backend
      uses: docker/build-push-action@v6
@@ -95,16 +101,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Logs**:
+
    ```bash
    docker logs container_name
    ```
 
 2. **Verify Environment Variables**:
+
    ```bash
    docker exec container_name env
    ```
 
 3. **Check Port Conflicts**:
+
    ```bash
    sudo netstat -tulpn | grep :3001
    ```
@@ -118,16 +127,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check SSH Key**:
+
    ```bash
    ssh-keygen -l -f ~/.ssh/id_rsa.pub
    ```
 
 2. **Verify Authorized Keys**:
+
    ```bash
    cat ~/.ssh/authorized_keys
    ```
 
 3. **Test SSH Connection**:
+
    ```bash
    ssh -v user@server_ip
    ```
@@ -139,16 +151,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Service Status**:
+
    ```bash
    sudo systemctl status service_name
    ```
 
 2. **View Service Logs**:
+
    ```bash
    sudo journalctl -u service_name -f
    ```
 
 3. **Check Dependencies**:
+
    ```bash
    sudo systemctl list-dependencies service_name
    ```
@@ -162,16 +177,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Environment File**:
+
    ```bash
    cat .env.production
    ```
 
 2. **Verify Variable Names**:
+
    ```bash
    grep -r "DATABASE_URL" .
    ```
 
 3. **Test Environment Loading**:
+
    ```bash
    source .env.production && echo $DATABASE_URL
    ```
@@ -183,16 +201,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Generate New Secrets**:
+
    ```bash
    openssl rand -base64 32
    ```
 
 2. **Update Environment**:
+
    ```bash
    nano .env.production
    ```
 
 3. **Restart Services**:
+
    ```bash
    ./deploy.sh restart
    ```
@@ -206,16 +227,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Find Process Using Port**:
+
    ```bash
    sudo lsof -i :3001
    ```
 
 2. **Kill Process**:
+
    ```bash
    sudo kill -9 PID
    ```
 
 3. **Change Port** (if needed):
+
    ```bash
    # In docker-compose.prod.yml
    ports:
@@ -229,11 +253,13 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Firewall Status**:
+
    ```bash
    sudo ufw status
    ```
 
 2. **Allow Ports**:
+
    ```bash
    sudo ufw allow 3001
    sudo ufw allow 80
@@ -251,16 +277,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Database URL**:
+
    ```bash
    echo $DATABASE_URL
    ```
 
 2. **Test Database Connection**:
+
    ```bash
    npx prisma db push
    ```
 
 3. **Check Database File Permissions**:
+
    ```bash
    ls -la prisma/
    ```
@@ -272,16 +301,19 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Reset Database** (development only):
+
    ```bash
    npx prisma migrate reset
    ```
 
 2. **Check Migration Status**:
+
    ```bash
    npx prisma migrate status
    ```
 
 3. **Apply Migrations**:
+
    ```bash
    npx prisma migrate deploy
    ```
@@ -295,17 +327,20 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check Memory Usage**:
+
    ```bash
    free -h
    htop
    ```
 
 2. **Optimize Docker**:
+
    ```bash
    docker system prune -f
    ```
 
 3. **Add Swap** (if needed):
+
    ```bash
    sudo fallocate -l 2G /swapfile
    sudo chmod 600 /swapfile
@@ -320,12 +355,14 @@ This guide covers common issues and their solutions for Cars Mania deployment.
 **Solutions**:
 
 1. **Check CPU Usage**:
+
    ```bash
    top
    htop
    ```
 
 2. **Identify Resource-Intensive Processes**:
+
    ```bash
    ps aux --sort=-%cpu | head
    ```
