@@ -194,8 +194,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { api } from '../api'
+import { toastWarning, toastError } from '../toast'
 
 interface SystemMetrics {
   cpu: { usage: number; loadAverage: number[]; cores: number }
@@ -298,7 +299,46 @@ const loading = ref(false)
 const lastUpdated = ref<string | null>(null)
 let refreshInterval: number | null = null
 
+// Network latency monitoring
+const previousNetworkLatency = ref<{ p50: number; timestamp: string } | null>(null)
+const latencyAlertThreshold = 50 // ms - alert if P50 increases by this much
+const latencyAlertCooldown = 5 * 60 * 1000 // 5 minutes cooldown between alerts
+let lastLatencyAlert = 0
+
 const activeAlerts = computed(() => (alerts.value || []).filter(alert => !alert.resolved))
+
+// Watch for network latency changes and show toast alerts
+watch(() => performance.value?.networkLatency?.p50, (newP50, oldP50) => {
+  if (newP50 > 0 && oldP50 > 0) {
+    const increase = newP50 - oldP50
+    const increasePercent = (increase / oldP50) * 100
+    
+    // Check if increase is significant and enough time has passed since last alert
+    const now = Date.now()
+    if (increase >= latencyAlertThreshold && (now - lastLatencyAlert) > latencyAlertCooldown) {
+      lastLatencyAlert = now
+      
+      if (increasePercent >= 100) {
+        // Doubled or more - critical alert
+        toastError(`Network latency critical: P50 increased by ${increasePercent.toFixed(0)}% (${increase}ms)`)
+      } else if (increasePercent >= 50) {
+        // 50%+ increase - warning alert
+        toastWarning(`Network latency warning: P50 increased by ${increasePercent.toFixed(0)}% (${increase}ms)`)
+      } else {
+        // Significant increase but not dramatic
+        toastWarning(`Network latency increased: P50 up ${increase}ms (${increasePercent.toFixed(0)}%)`)
+      }
+    }
+  }
+  
+  // Store current value for next comparison
+  if (newP50 > 0) {
+    previousNetworkLatency.value = {
+      p50: newP50,
+      timestamp: new Date().toISOString()
+    }
+  }
+})
 
 const refreshMetrics = async () => {
   loading.value = true

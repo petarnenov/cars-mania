@@ -17,6 +17,7 @@ import { toastState, removeToast } from '../toast'
 .toast.success { background: #ecfdf5; color: #065f46; border-color: #10b981; }
 .toast.error { background: #fef2f2; color: #7f1d1d; border-color: #ef4444; }
 .toast.info { background: #eff6ff; color: #1e40af; border-color: #3b82f6; }
+.toast.warning { background: #fffbeb; color: #92400e; border-color: #f59e0b; }
 .msg { flex: 1; }
 .x { background: transparent; border: none; color: inherit; font-size: 18px; cursor: pointer; }
 </style>

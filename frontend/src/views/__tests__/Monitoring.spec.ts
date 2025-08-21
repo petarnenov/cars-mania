@@ -10,15 +10,27 @@ vi.mock('../../api', () => ({
   api: vi.fn()
 }))
 
+// Mock toast functions
+vi.mock('../../toast', () => ({
+  toastWarning: vi.fn(),
+  toastError: vi.fn()
+}))
+
 const mockApi = api as vi.MockedFunction<typeof api>
+
+// Import mocked functions
+import { toastWarning, toastError } from '../../toast'
+const toastWarningMock = toastWarning as vi.MockedFunction<typeof toastWarning>
+const toastErrorMock = toastError as vi.MockedFunction<typeof toastError>
 
 describe('Monitoring.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    vi.clearAllTimers()
+    vi.useRealTimers()
   })
 
   describe('Component Rendering', () => {
@@ -743,6 +755,206 @@ describe('Monitoring.vue', () => {
 
       // Should not show alerts section when no alerts
       expect(wrapper.find('.alerts-section').exists()).toBe(false)
+    })
+  })
+
+  describe('Network Latency Monitoring', () => {
+    it('shows warning toast when network latency P50 increases significantly', async () => {
+      // Mock all API calls to return proper data structure
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/system':
+            return Promise.resolve({
+              cpu: { usage: 25, loadAverage: [1.2, 1.1, 1.0], cores: 4 },
+              memory: { total: 8192, used: 4096, free: 4096, usagePercent: 50 },
+              disk: { total: 100000, used: 50000, free: 50000, usagePercent: 50 },
+              uptime: 3600000,
+              network: { bytesIn: 1000000, bytesOut: 500000 }
+            })
+          case '/monitoring/application':
+            return Promise.resolve({
+              requests: { total: 1000, successful: 950, failed: 50, averageResponseTime: 150 },
+              errors: { total: 50, byType: { '500': 30, '404': 20 } },
+              users: { total: 500, newToday: 10, activeToday: 100 },
+              cars: { total: 200, verified: 180, pending: 15, draft: 5 },
+              messages: { total: 1000, sentToday: 50 },
+              performance: { p95ResponseTime: 300, p99ResponseTime: 500 }
+            })
+          case '/monitoring/health':
+            return Promise.resolve({
+              status: 'healthy',
+              checks: {
+                database: { status: 'healthy', responseTime: 5 },
+                disk: { status: 'healthy', usage: 50 },
+                memory: { status: 'healthy', usage: 50 },
+                cpu: { status: 'healthy', usage: 25 }
+              },
+              timestamp: new Date().toISOString(),
+              alerts: []
+            })
+          case '/monitoring/alerts?resolved=false':
+            return Promise.resolve([])
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 20, p50: 15, p95: 40, p99: 80 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          case '/monitoring/database':
+            return Promise.resolve({
+              status: 'healthy',
+              responseTime: 5,
+              tables: { users: 500, cars: 200, messages: 1000 },
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      const wrapper = mount(Monitoring)
+      await nextTick()
+      
+      // Now mock the updated performance data with higher P50
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 30, p50: 25, p95: 60, p99: 120 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      // Trigger refresh to get updated data
+      await wrapper.find('.refresh-btn').trigger('click')
+      await nextTick()
+      
+      // Check that warning toast was called
+      expect(toastWarningMock).toHaveBeenCalledWith(
+        expect.stringContaining('Network latency warning: P50 increased by 67% (10ms)')
+      )
+    })
+
+    it('shows error toast when network latency P50 doubles', async () => {
+      // Mock initial data with low P50
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 20, p50: 20, p95: 50, p99: 100 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      const wrapper = mount(Monitoring)
+      await nextTick()
+      
+      // Mock updated data with doubled P50
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 40, p50: 40, p95: 80, p99: 160 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      await wrapper.find('.refresh-btn').trigger('click')
+      await nextTick()
+      
+      // Check that error toast was called
+      expect(toastErrorMock).toHaveBeenCalledWith(
+        expect.stringContaining('Network latency critical: P50 increased by 100% (20ms)')
+      )
+    })
+
+    it('does not show toast for small increases', async () => {
+      // Mock initial data
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 20, p50: 25, p95: 50, p99: 100 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      const wrapper = mount(Monitoring)
+      await nextTick()
+      
+      // Mock updated data with small increase (only 5ms)
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 25, p50: 30, p95: 55, p99: 110 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      await wrapper.find('.refresh-btn').trigger('click')
+      await nextTick()
+      
+      // Should not show any toast for small increase
+      expect(toastWarningMock).not.toHaveBeenCalled()
+      expect(toastErrorMock).not.toHaveBeenCalled()
+    })
+
+    it('displays network latency metrics correctly', async () => {
+      mockApi.mockImplementation((url: string) => {
+        switch (url) {
+          case '/monitoring/performance':
+            return Promise.resolve({
+              responseTimes: { average: 150, p95: 300, p99: 500 },
+              networkLatency: { average: 25, p50: 20, p95: 50, p99: 100 },
+              errorRate: 5,
+              requestRate: 10,
+              timestamp: new Date().toISOString()
+            })
+          default:
+            return Promise.resolve({})
+        }
+      })
+
+      const wrapper = mount(Monitoring)
+      await nextTick()
+      
+      expect(wrapper.text()).toContain('25ms') // Average
+      expect(wrapper.text()).toContain('20ms') // P50
+      expect(wrapper.text()).toContain('50ms') // P95
+      expect(wrapper.text()).toContain('100ms') // P99
     })
   })
 })
