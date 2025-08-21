@@ -21,6 +21,9 @@ export async function api(path: string, init: RequestInit = {}) {
   const headers = new Headers(init.headers || {})
   if (!headers.has('Content-Type') && init.body) headers.set('Content-Type', 'application/json')
   
+  // Add client timestamp for network latency measurement
+  headers.set('X-Client-Time', Date.now().toString())
+  
   try {
     const res = await fetch(`/api${path}`,
       { credentials: 'include', ...init, headers }

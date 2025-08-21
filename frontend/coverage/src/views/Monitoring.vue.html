@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>272/272</span>
+                <span class='fraction'>280/280</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">99.42% </span>
+                <span class="strong">99.46% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>174/175</span>
+                <span class='fraction'>186/187</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>272/272</span>
+                <span class='fraction'>280/280</span>
             </div>
         
             
@@ -756,7 +756,17 @@
 <a name='L691'></a><a href='#L691'>691</a>
 <a name='L692'></a><a href='#L692'>692</a>
 <a name='L693'></a><a href='#L693'>693</a>
-<a name='L694'></a><a href='#L694'>694</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L694'></a><a href='#L694'>694</a>
+<a name='L695'></a><a href='#L695'>695</a>
+<a name='L696'></a><a href='#L696'>696</a>
+<a name='L697'></a><a href='#L697'>697</a>
+<a name='L698'></a><a href='#L698'>698</a>
+<a name='L699'></a><a href='#L699'>699</a>
+<a name='L700'></a><a href='#L700'>700</a>
+<a name='L701'></a><a href='#L701'>701</a>
+<a name='L702'></a><a href='#L702'>702</a>
+<a name='L703'></a><a href='#L703'>703</a>
+<a name='L704'></a><a href='#L704'>704</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -872,6 +882,14 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -998,6 +1016,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1027,6 +1046,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1560,6 +1580,14 @@
         &lt;/div&gt;
         
         &lt;div class="metric-card"&gt;
+          &lt;h3&gt;Network Latency&lt;/h3&gt;
+          &lt;div class="metric-value"&gt;{{ performance?.networkLatency?.average?.toFixed(0) || '0' }}ms&lt;/div&gt;
+          &lt;p&gt;P50: {{ performance?.networkLatency?.p50?.toFixed(0) || '0' }}ms&lt;/p&gt;
+          &lt;p&gt;P95: {{ performance?.networkLatency?.p95?.toFixed(0) || '0' }}ms&lt;/p&gt;
+          &lt;p&gt;P99: {{ performance?.networkLatency?.p99?.toFixed(0) || '0' }}ms&lt;/p&gt;
+        &lt;/div&gt;
+        
+        &lt;div class="metric-card"&gt;
           &lt;h3&gt;Error Rate&lt;/h3&gt;
           &lt;div class="metric-value" :class="getErrorRateClass(performance?.errorRate || 0)"&gt;
             {{ performance?.errorRate?.toFixed(2) || '0.00' }}%
@@ -1679,6 +1707,7 @@ interface Alert {
 &nbsp;
 interface PerformanceMetrics {
   responseTimes: { average: number; p95: number; p99: number }
+  networkLatency: { average: number; p50: number; p95: number; p99: number }
   errorRate: number
   requestRate: number
   timestamp: string
@@ -1723,6 +1752,7 @@ const health = ref&lt;HealthCheck&gt;({
 const alerts = ref&lt;Alert[]&gt;([])
 const performance = ref&lt;PerformanceMetrics&gt;({
   responseTimes: { average: 0, p95: 0, p99: 0 },
+  networkLatency: { average: 0, p50: 0, p95: 0, p99: 0 },
   errorRate: 0,
   requestRate: 0,
   timestamp: new Date().toISOString()
@@ -1739,7 +1769,7 @@ const loading = ref(false)
 const lastUpdated = ref&lt;string | null&gt;(null)
 let refreshInterval: number | null = null
 &nbsp;
-const activeAlerts = computed(() =&gt; (alerts.<span class="branch-0 cbranch-no" title="branch not covered" >value || []).f</span>ilter(alert =&gt; !alert.resolved))
+const activeAlerts = computed(() =&gt; (alerts.<span class="branch-0 cbranch-no" title="branch not covered" >value || []).f</span>filter(alert =&gt; !alert.resolved))
 &nbsp;
 const refreshMetrics = async () =&gt; {
   loading.value = true
@@ -2149,7 +2179,7 @@ h2 {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-20T09:07:58.156Z
+                at 2025-08-21T19:18:47.664Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

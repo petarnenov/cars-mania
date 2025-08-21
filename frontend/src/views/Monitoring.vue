@@ -109,6 +109,14 @@
         </div>
         
         <div class="metric-card">
+          <h3>Network Latency</h3>
+          <div class="metric-value">{{ performance?.networkLatency?.average?.toFixed(0) || '0' }}ms</div>
+          <p>P50: {{ performance?.networkLatency?.p50?.toFixed(0) || '0' }}ms</p>
+          <p>P95: {{ performance?.networkLatency?.p95?.toFixed(0) || '0' }}ms</p>
+          <p>P99: {{ performance?.networkLatency?.p99?.toFixed(0) || '0' }}ms</p>
+        </div>
+        
+        <div class="metric-card">
           <h3>Error Rate</h3>
           <div class="metric-value" :class="getErrorRateClass(performance?.errorRate || 0)">
             {{ performance?.errorRate?.toFixed(2) || '0.00' }}%
@@ -228,6 +236,7 @@ interface Alert {
 
 interface PerformanceMetrics {
   responseTimes: { average: number; p95: number; p99: number }
+  networkLatency: { average: number; p50: number; p95: number; p99: number }
   errorRate: number
   requestRate: number
   timestamp: string
@@ -272,6 +281,7 @@ const health = ref<HealthCheck>({
 const alerts = ref<Alert[]>([])
 const performance = ref<PerformanceMetrics>({
   responseTimes: { average: 0, p95: 0, p99: 0 },
+  networkLatency: { average: 0, p50: 0, p95: 0, p99: 0 },
   errorRate: 0,
   requestRate: 0,
   timestamp: new Date().toISOString()

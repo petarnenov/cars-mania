@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { getMonitoringService } from '../lib/monitoring.js'
 import { prisma } from '../lib/prisma.js'
+import { metrics } from './metrics.js'
 
 const router = Router()
 
@@ -106,16 +107,41 @@ router.get('/performance', async (req, res) => {
     const monitoring = getMonitoringService(prisma)
     const appMetrics = await monitoring.getApplicationMetrics()
     
+    // Get real-time metrics from the metrics middleware
+    
+    // Calculate response time percentiles from real-time data
+    const sortedTimes = metrics.response_times.sort((a, b) => a - b)
+    const responseP50 = sortedTimes[Math.floor(sortedTimes.length * 0.5)] || 0
+    const responseP95 = sortedTimes[Math.floor(sortedTimes.length * 0.95)] || 0
+    const responseP99 = sortedTimes[Math.floor(sortedTimes.length * 0.99)] || 0
+    const responseAvg = sortedTimes.length > 0 ? sortedTimes.reduce((a, b) => a + b, 0) / sortedTimes.length : 0
+    
+    // Calculate network latency percentiles
+    const sortedLatency = metrics.network_latency.sort((a, b) => a - b)
+    const latencyP50 = sortedLatency[Math.floor(sortedLatency.length * 0.5)] || 0
+    const latencyP95 = sortedLatency[Math.floor(sortedLatency.length * 0.95)] || 0
+    const latencyP99 = sortedLatency[Math.floor(sortedLatency.length * 0.99)] || 0
+    const latencyAvg = sortedLatency.length > 0 ? sortedLatency.reduce((a, b) => a + b, 0) / sortedLatency.length : 0
+    
     res.json({
       responseTimes: {
-        average: appMetrics.requests.averageResponseTime,
-        p95: appMetrics.performance.p95ResponseTime,
-        p99: appMetrics.performance.p99ResponseTime
+        average: Math.round(responseAvg),
+        p50: responseP50,
+        p95: responseP95,
+        p99: responseP99
       },
-      errorRate: appMetrics.requests.total > 0 
-        ? (appMetrics.requests.failed / appMetrics.requests.total) * 100 
+      networkLatency: {
+        average: Math.round(latencyAvg),
+        p50: latencyP50,
+        p95: latencyP95,
+        p99: latencyP99
+      },
+      errorRate: metrics.requests.total > 0 
+        ? (metrics.errors / metrics.requests.total) * 100 
         : 0,
-      requestRate: appMetrics.requests.total / (Date.now() / 1000), // requests per second
+      requestRate: metrics.requests.total > 0 
+        ? metrics.requests.total / ((Date.now() - metrics.uptime_start) / 1000) 
+        : 0,
       timestamp: new Date().toISOString()
     })
   } catch (error) {

@@ -4,13 +4,14 @@ import { prisma } from '../lib/prisma'
 const router = Router()
 
 // In-memory metrics storage (in production, use Redis or similar)
-const metrics = {
+export const metrics = {
   requests: {
     total: 0,
     by_method: {} as Record<string, number>,
     by_status: {} as Record<string, number>,
   },
   response_times: [] as number[],
+  network_latency: [] as number[], // FE to BE network latency
   errors: 0,
   uptime_start: Date.now(),
 }
@@ -19,6 +20,9 @@ const metrics = {
 export const collectMetrics = (req: any, res: any, next: any) => {
   const startTime = Date.now()
   
+  // Add server timestamp header for network latency calculation
+  res.set('X-Server-Time', startTime.toString())
+  
   metrics.requests.total++
   metrics.requests.by_method[req.method] = (metrics.requests.by_method[req.method] || 0) + 1
   
@@ -26,6 +30,21 @@ export const collectMetrics = (req: any, res: any, next: any) => {
   res.end = function(...args: any[]) {
     const duration = Date.now() - startTime
     metrics.response_times.push(duration)
+    
+    // Calculate network latency if client timestamp is provided
+    const clientTime = req.headers['x-client-time']
+    if (clientTime) {
+      const clientTimestamp = parseInt(clientTime)
+      const networkLatency = startTime - clientTimestamp
+      if (networkLatency > 0 && networkLatency < 60000) { // Sanity check: 0-60 seconds
+        metrics.network_latency.push(networkLatency)
+        
+        // Keep only last 1000 network latency samples
+        if (metrics.network_latency.length > 1000) {
+          metrics.network_latency = metrics.network_latency.slice(-1000)
+        }
+      }
+    }
     
     // Keep only last 1000 response times
     if (metrics.response_times.length > 1000) {
@@ -56,6 +75,13 @@ router.get('/metrics', async (req, res) => {
     const p99 = sortedTimes[Math.floor(sortedTimes.length * 0.99)] || 0
     const avg = sortedTimes.length > 0 ? sortedTimes.reduce((a, b) => a + b, 0) / sortedTimes.length : 0
     
+    // Calculate network latency percentiles
+    const sortedLatency = metrics.network_latency.sort((a, b) => a - b)
+    const latencyP50 = sortedLatency[Math.floor(sortedLatency.length * 0.5)] || 0
+    const latencyP95 = sortedLatency[Math.floor(sortedLatency.length * 0.95)] || 0
+    const latencyP99 = sortedLatency[Math.floor(sortedLatency.length * 0.99)] || 0
+    const latencyAvg = sortedLatency.length > 0 ? sortedLatency.reduce((a, b) => a + b, 0) / sortedLatency.length : 0
+    
     // Get database stats
     const [userCount, carCount, conversationCount, messageCount] = await Promise.all([
       prisma.user.count(),
@@ -83,6 +109,14 @@ router.get('/metrics', async (req, res) => {
         p95_ms: p95,
         p99_ms: p99,
         samples: sortedTimes.length,
+      },
+      
+      network_latency: {
+        avg_ms: Math.round(latencyAvg),
+        p50_ms: latencyP50,
+        p95_ms: latencyP95,
+        p99_ms: latencyP99,
+        samples: sortedLatency.length,
       },
       
       database: {
