@@ -40,7 +40,7 @@ Add these status checks (they should appear after CI runs):
 - ✅ **Require a pull request before merging**
 - ✅ **Require approvals** (set to 1 or more)
 - ✅ **Dismiss stale PR approvals when new commits are pushed**
-- ✅ **Require review from code owners** (if you have CODEOWNERS file)
+- ✅ **Require review from code owners** (if you have a file)
 - ✅ **Restrict pushes that create files**
 - ✅ **Require linear history** (optional, but recommended)
 

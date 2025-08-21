@@ -1,0 +1,142 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "adduser",
+    "apt",
+    "authorized_keys",
+    "backup",
+    "backups",
+    "base64",
+    "certbot",
+    "chmod",
+    "chown",
+    "crontab",
+    "curl",
+    "datacenter",
+    "deploy",
+    "deployment",
+    "df",
+    "docker",
+    "docker-compose",
+    "droplet",
+    "droplets",
+    "fail2ban",
+    "free",
+    "fsSL",
+    "get-docker",
+    "ghcr",
+    "git",
+    "grep",
+    "htop",
+    "http",
+    "https",
+    "ifconfig",
+    "jail",
+    "jwt",
+    "mkdir",
+    "monitor",
+    "monitoring",
+    "nano",
+    "netstat",
+    "nginx",
+    "openssl",
+    "petarnenov",
+    "prisma",
+    "prune",
+    "ps",
+    "rand",
+    "registrar",
+    "renew",
+    "restart",
+    "rsa",
+    "sed",
+    "sh",
+    "ssh",
+    "sshd",
+    "sudo",
+    "su",
+    "systemctl",
+    "tar",
+    "tulpn",
+    "ufw",
+    "usermod",
+    "vCPU",
+    "wget",
+    "worker_connections",
+    "x",
+    "YOUR_SERVER_IP",
+    "yourdomain",
+    "certonly"
+  ],
+  "ignoreWords": [],
+  "patterns": [
+    {
+      "name": "bash-commands",
+      "pattern": "/\\b[a-z]+\\b/g",
+      "description": "Bash commands and Linux utilities"
+    },
+    {
+      "name": "docker-commands",
+      "pattern": "/\\bdocker\\b/g",
+      "description": "Docker related commands"
+    },
+    {
+      "name": "file-paths",
+      "pattern": "/\\/[\\w\\/\\-\\.]+/g",
+      "description": "File paths and directories"
+    },
+    {
+      "name": "environment-variables",
+      "pattern": "/[A-Z_]+/g",
+      "description": "Environment variables"
+    },
+    {
+      "name": "urls",
+      "pattern": "/https?:\\/\\/[\\w\\-\\.\\/]+/g",
+      "description": "URLs and web addresses"
+    },
+    {
+      "name": "ip-addresses",
+      "pattern": "/\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b/g",
+      "description": "IP addresses"
+    },
+    {
+      "name": "ports",
+      "pattern": "/:\\d+/g",
+      "description": "Port numbers"
+    }
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "coverage/**",
+    "dist/**",
+    "build/**",
+    ".git/**",
+    "uploads/**",
+    "prisma/dev.db",
+    "prisma/production.db",
+    "*.log",
+    "*.db",
+    "*.tar.gz"
+  ],
+  "dictionaries": [
+    "bash",
+    "docker",
+    "en_US",
+    "en-gb",
+    "typescript",
+    "node",
+    "npm",
+    "html",
+    "css",
+    "markdown"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": "./cspell-project-words.txt",
+      "description": "Words used in this project"
+    }
+  ]
+}

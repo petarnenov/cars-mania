@@ -42,7 +42,7 @@ ssh root@YOUR_SERVER_IP
 ### 2.2 Create Non-Root User
 
 ```bash
-# Create new user
+# Create new user (Linux command)
 adduser cars-mania
 
 # Add user to sudo group
@@ -77,7 +77,7 @@ sudo nano /etc/ssh/sshd_config
 
 Add/modify these lines:
 
-```
+```text
 PermitRootLogin no
 PasswordAuthentication no
 Port 22
@@ -524,7 +524,7 @@ crontab -e
    cat .env.production
    ```
 
-2. **Port conflicts**
+3. **Port conflicts**  
 
    ```bash
    # Check what's using ports
@@ -532,7 +532,7 @@ crontab -e
    sudo netstat -tulpn | grep :3001
    ```
 
-3. **Docker issues**
+4. **Docker issues**
 
    ```bash
    # Restart Docker
@@ -542,7 +542,7 @@ crontab -e
    docker system prune -f
    ```
 
-4. **SSL certificate issues**
+5. **SSL certificate issues**
 
    ```bash
    # Renew certificate
